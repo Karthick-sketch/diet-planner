@@ -1,17 +1,15 @@
-package org.karthick.dietplanner.food.document;
+package org.karthick.dietplanner.food.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @Document(collection = "foods")
 public class Food {
-  @Id private UUID id;
+  @Id private String id;
   private String name;
   private String servingSize;
   private double calories;
@@ -21,8 +19,4 @@ public class Food {
   private String category;
   private String[] tags;
   private boolean isCustom;
-
-  public Food() {
-    this.id = UUID.randomUUID();
-  }
 }

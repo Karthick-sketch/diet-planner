@@ -1,7 +1,7 @@
 package org.karthick.dietplanner.food;
 
 import lombok.AllArgsConstructor;
-import org.karthick.dietplanner.food.document.Food;
+import org.karthick.dietplanner.food.entity.Food;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

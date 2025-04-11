@@ -1,8 +1,6 @@
 package org.karthick.dietplanner.food;
 
-import org.karthick.dietplanner.food.document.Food;
+import org.karthick.dietplanner.food.entity.Food;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.UUID;
-
-public interface FoodRepository extends MongoRepository<Food, UUID> {}
+public interface FoodRepository extends MongoRepository<Food, String> {}

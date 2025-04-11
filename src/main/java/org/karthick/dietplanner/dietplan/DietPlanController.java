@@ -1,13 +1,12 @@
 package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
-import org.karthick.dietplanner.dietplan.document.DietPlan;
+import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.dto.DietPlanDTO;
 import org.karthick.dietplanner.dietplan.model.Meals;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
@@ -26,7 +25,7 @@ public class DietPlanController {
   }
 
   @GetMapping("meals/{id}")
-  public Meals getMeal(@PathVariable("id") UUID id) {
+  public Meals getMeal(@PathVariable("id") String id) {
     return this.dietPlanService.getMeals(id);
   }
 }

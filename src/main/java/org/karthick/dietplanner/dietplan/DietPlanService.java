@@ -1,36 +1,34 @@
 package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
-import org.karthick.dietplanner.dietplan.document.DietPlan;
+import org.karthick.dietplanner.config.ModelMapperConfig;
+import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.dto.DietPlanDTO;
 import org.karthick.dietplanner.exception.EntityNotFoundException;
 import org.karthick.dietplanner.dietplan.model.Macros;
 import org.karthick.dietplanner.dietplan.model.Meals;
 import org.karthick.dietplanner.util.CaloriesCalculator;
-import org.karthick.dietplanner.util.EntityMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Service
 public class DietPlanService {
   private DietPlanRepository dietPlannerRepository;
-  private EntityMapper<DietPlan, DietPlanDTO> mapper;
+  private ModelMapperConfig mapper;
 
   public List<DietPlan> findAllDietPlans() {
     return dietPlannerRepository.findAll();
   }
 
   public DietPlan createDietPlan(DietPlanDTO dietPlanDTO) {
-    DietPlan dietPlan = this.processDietPlan(dietPlanDTO);
-    return dietPlannerRepository.save(dietPlan);
+    return dietPlannerRepository.save(this.processDietPlan(dietPlanDTO));
   }
 
   private DietPlan processDietPlan(DietPlanDTO dietPlanDTO) {
-    DietPlan dietPlan = mapper.toEntity(dietPlanDTO);
+    DietPlan dietPlan = mapper.convertToEntity(dietPlanDTO, DietPlan.class);
     dietPlan.setTdee(
         CaloriesCalculator.findTDEE(
             dietPlanDTO.getAge(),
@@ -45,7 +43,7 @@ public class DietPlanService {
     return dietPlan;
   }
 
-  public Meals getMeals(UUID id) {
+  public Meals getMeals(String id) {
     Optional<DietPlan> dietPlan = this.dietPlannerRepository.findById(id);
     if (dietPlan.isPresent()) {
       return splitMeals(dietPlan.get());
