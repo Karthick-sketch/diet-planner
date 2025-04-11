@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
-@RestController()
+@RestController
 @RequestMapping("/diet-planner")
 public class DietPlanController {
     private DietPlanService dietPlanService;

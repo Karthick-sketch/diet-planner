@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
 @AllArgsConstructor
+@Service
 public class DietPlanService {
     private DietPlanRepository dietPlannerRepository;
     private EntityMapper<DietPlan, DietPlanDTO> mapper;
