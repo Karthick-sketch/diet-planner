@@ -10,8 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Meals {
-    private Macros breakfast;
-    public Macros lunch;
-    private Macros snack;
-    private Macros dinner;
+  private Macros breakfast;
+  public Macros lunch;
+  private Macros snack;
+  private Macros dinner;
 }

@@ -10,15 +10,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/food")
 public class FoodController {
-    private FoodService foodService;
+  private FoodService foodService;
 
-    @GetMapping
-    public List<Food> getAllFoods() {
-        return this.foodService.findAllFoods();
-    }
+  @GetMapping
+  public List<Food> getAllFoods() {
+    return this.foodService.findAllFoods();
+  }
 
-    @PostMapping
-    public Food createFood(@RequestBody() Food food) {
-        return this.foodService.createFood(food);
-    }
+  @PostMapping
+  public Food createFood(@RequestBody() Food food) {
+    return this.foodService.createFood(food);
+  }
 }

@@ -14,25 +14,24 @@ import java.util.UUID;
 @Setter
 @Document(collection = "diet_plans")
 public class DietPlan {
-    @Id
-    private UUID id;
-    private int age;
-    private Gender gender;
-    private double height;
-    private double weight;
-    private Goal goal;
-    private double finalGoal;
-    private TimePeriod timePeriod;
-    private Activity activity;
-    private FoodType foodType;
-    private List<String> foodFilters;
-    private double tdee;
-    private double deficit;
-    private double protein;
-    private double fat;
-    private double carbs;
+  @Id private UUID id;
+  private int age;
+  private Gender gender;
+  private double height;
+  private double weight;
+  private Goal goal;
+  private double finalGoal;
+  private TimePeriod timePeriod;
+  private Activity activity;
+  private FoodType foodType;
+  private List<String> foodFilters;
+  private double tdee;
+  private double deficit;
+  private double protein;
+  private double fat;
+  private double carbs;
 
-    public DietPlan() {
-        this.id = UUID.randomUUID();
-    }
+  public DietPlan() {
+    this.id = UUID.randomUUID();
+  }
 }

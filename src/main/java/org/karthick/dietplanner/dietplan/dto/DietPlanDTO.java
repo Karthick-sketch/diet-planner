@@ -11,15 +11,15 @@ import java.util.UUID;
 @Getter
 @Setter
 public class DietPlanDTO {
-    private UUID id;
-    private int age;
-    private Gender gender;
-    private int height;
-    private int weight;
-    private Goal goal;
-    private int finalGoal;
-    private Duration duration;
-    private Activity activity;
-    private FoodType foodType;
-    private List<String> foodFilters;
+  private UUID id;
+  private int age;
+  private Gender gender;
+  private int height;
+  private int weight;
+  private Goal goal;
+  private int finalGoal;
+  private Duration duration;
+  private Activity activity;
+  private FoodType foodType;
+  private List<String> foodFilters;
 }

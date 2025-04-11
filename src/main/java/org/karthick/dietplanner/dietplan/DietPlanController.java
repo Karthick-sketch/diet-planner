@@ -13,21 +13,20 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/diet-planner")
 public class DietPlanController {
-    private DietPlanService dietPlanService;
+  private DietPlanService dietPlanService;
 
-    @GetMapping
-    public List<DietPlan> getAllDietPlans() {
-        return dietPlanService.findAllDietPlans();
-    }
+  @GetMapping
+  public List<DietPlan> getAllDietPlans() {
+    return dietPlanService.findAllDietPlans();
+  }
 
-    @PostMapping
-    public DietPlan createDietPlan(@RequestBody() DietPlanDTO dietPlanDTO) {
-        return dietPlanService.createDietPlan(dietPlanDTO);
-    }
+  @PostMapping
+  public DietPlan createDietPlan(@RequestBody() DietPlanDTO dietPlanDTO) {
+    return dietPlanService.createDietPlan(dietPlanDTO);
+  }
 
-    @GetMapping("meals/{id}")
-    public Meals getMeal(@PathVariable("id") UUID id) {
-        return this.dietPlanService.getMeals(id);
-    }
+  @GetMapping("meals/{id}")
+  public Meals getMeal(@PathVariable("id") UUID id) {
+    return this.dietPlanService.getMeals(id);
+  }
 }
-

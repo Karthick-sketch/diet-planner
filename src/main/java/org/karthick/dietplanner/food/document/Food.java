@@ -11,19 +11,18 @@ import java.util.UUID;
 @Setter
 @Document(collection = "foods")
 public class Food {
-    @Id
-    private UUID id;
-    private String name;
-    private String servingSize;
-    private double calories;
-    private double gProtein;
-    private double gFat;
-    private double gCarbs;
-    private String category;
-    private String[] tags;
-    private boolean isCustom;
+  @Id private UUID id;
+  private String name;
+  private String servingSize;
+  private double calories;
+  private double gProtein;
+  private double gFat;
+  private double gCarbs;
+  private String category;
+  private String[] tags;
+  private boolean isCustom;
 
-    public Food() {
-        this.id = UUID.randomUUID();
-    }
+  public Food() {
+    this.id = UUID.randomUUID();
+  }
 }

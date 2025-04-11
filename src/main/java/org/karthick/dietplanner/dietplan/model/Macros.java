@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Macros {
-    private double protein;
-    private double fat;
-    private double carbs;
+  private double protein;
+  private double fat;
+  private double carbs;
 }

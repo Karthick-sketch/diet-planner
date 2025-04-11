@@ -9,13 +9,13 @@ import java.util.List;
 @AllArgsConstructor
 @Service
 public class FoodService {
-    private FoodRepository foodRepository;
+  private FoodRepository foodRepository;
 
-    public List<Food> findAllFoods() {
-        return foodRepository.findAll();
-    }
+  public List<Food> findAllFoods() {
+    return foodRepository.findAll();
+  }
 
-    public Food createFood(Food food) {
-        return foodRepository.save(food);
-    }
+  public Food createFood(Food food) {
+    return foodRepository.save(food);
+  }
 }
