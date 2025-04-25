@@ -3,7 +3,7 @@ package org.karthick.dietplanner.dietplan.dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.karthick.dietplanner.dietplan.enums.*;
-import org.karthick.dietplanner.dietplan.model.TimePeriod;
+import org.karthick.dietplanner.shared.model.TimePeriod;
 
 import java.util.List;
 import java.util.UUID;

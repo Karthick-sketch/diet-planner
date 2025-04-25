@@ -5,8 +5,8 @@ import org.karthick.dietplanner.config.ModelMapperConfig;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.dto.DietPlanDTO;
 import org.karthick.dietplanner.exception.EntityNotFoundException;
-import org.karthick.dietplanner.dietplan.model.Macros;
-import org.karthick.dietplanner.dietplan.model.Meals;
+import org.karthick.dietplanner.shared.model.Macros;
+import org.karthick.dietplanner.shared.model.MealKcal;
 import org.karthick.dietplanner.util.CaloriesCalculator;
 import org.springframework.stereotype.Service;
 
@@ -43,18 +43,18 @@ public class DietPlanService {
     return dietPlan;
   }
 
-  public Meals getMeals(String id) {
+  public MealKcal getMealKcal(String id) {
     Optional<DietPlan> dietPlan = this.dietPlannerRepository.findById(id);
     if (dietPlan.isPresent()) {
-      return splitMeals(dietPlan.get());
+      return splitForMealKcal(dietPlan.get());
     } else {
       throw new EntityNotFoundException("No macros found.");
     }
   }
 
-  private Meals splitMeals(DietPlan dietPlan) {
+  private MealKcal splitForMealKcal(DietPlan dietPlan) {
     Macros macros = new Macros(dietPlan.getProtein(), dietPlan.getFat(), dietPlan.getCarbs());
-    return new Meals(
+    return new MealKcal(
         CaloriesCalculator.macrosPercentage(macros, 30),
         CaloriesCalculator.macrosPercentage(macros, 30),
         CaloriesCalculator.macrosPercentage(macros, 15),

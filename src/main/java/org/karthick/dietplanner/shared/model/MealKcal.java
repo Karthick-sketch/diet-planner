@@ -1,4 +1,4 @@
-package org.karthick.dietplanner.dietplan.model;
+package org.karthick.dietplanner.shared.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Meals {
+public class MealKcal {
   private Macros breakfast;
   public Macros lunch;
   private Macros snack;

@@ -1,7 +1,7 @@
 package org.karthick.dietplanner.util;
 
 import org.karthick.dietplanner.dietplan.enums.Activity;
-import org.karthick.dietplanner.dietplan.model.Macros;
+import org.karthick.dietplanner.shared.model.Macros;
 
 public final class CaloriesCalculator {
   public static double findTDEE(int age, double weight, double height, Activity activity) {

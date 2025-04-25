@@ -3,7 +3,7 @@ package org.karthick.dietplanner.dietplan.entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.karthick.dietplanner.dietplan.enums.*;
-import org.karthick.dietplanner.dietplan.model.TimePeriod;
+import org.karthick.dietplanner.shared.model.TimePeriod;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
