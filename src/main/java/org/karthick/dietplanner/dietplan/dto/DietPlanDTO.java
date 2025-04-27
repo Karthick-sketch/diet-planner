@@ -12,6 +12,8 @@ import java.util.UUID;
 @Setter
 public class DietPlanDTO {
   private UUID id;
+  private String title;
+  private String description;
   private int age;
   private Gender gender;
   private int height;

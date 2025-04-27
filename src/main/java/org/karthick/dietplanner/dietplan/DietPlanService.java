@@ -23,6 +23,14 @@ public class DietPlanService {
     return dietPlannerRepository.findAll();
   }
 
+  public DietPlan findDietPlanById(String id) {
+    Optional<DietPlan> dietPlan = dietPlannerRepository.findById(id);
+    if (dietPlan.isEmpty()) {
+      throw new EntityNotFoundException("The Diet plan with the ID of '" + id + "' is not found");
+    }
+    return dietPlan.get();
+  }
+
   public DietPlan createDietPlan(DietPlanDTO dietPlanDTO) {
     return dietPlannerRepository.save(this.processDietPlan(dietPlanDTO));
   }

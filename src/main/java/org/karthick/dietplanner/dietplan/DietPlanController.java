@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/diet-planner")
 public class DietPlanController {
@@ -17,6 +18,11 @@ public class DietPlanController {
   @GetMapping
   public List<DietPlan> getAllDietPlans() {
     return dietPlanService.findAllDietPlans();
+  }
+
+  @GetMapping("/{id}")
+  public DietPlan getDietPlan(@PathVariable String id) {
+    return dietPlanService.findDietPlanById(id);
   }
 
   @PostMapping

@@ -69,6 +69,7 @@ public class FoodService {
     return meals;
   }
 
+  @SuppressWarnings("unused")
   private double adjustServing(Food food, Macros targetMacros) {
     return Math.min(
         Math.min(
