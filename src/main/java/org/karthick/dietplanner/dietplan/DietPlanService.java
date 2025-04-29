@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.karthick.dietplanner.config.ModelMapperConfig;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.dto.DietPlanDTO;
+import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
 import org.karthick.dietplanner.exception.EntityNotFoundException;
 import org.karthick.dietplanner.shared.model.Macros;
 import org.karthick.dietplanner.shared.model.MealKcal;
@@ -21,6 +22,10 @@ public class DietPlanService {
 
   public List<DietPlan> findAllDietPlans() {
     return dietPlannerRepository.findAll();
+  }
+
+  public List<DietPlanListItemDTO> findAllDietPlanList() {
+    return dietPlannerRepository.findAllDietPlanList();
   }
 
   public DietPlan findDietPlanById(String id) {
@@ -44,7 +49,7 @@ public class DietPlanService {
             dietPlan.getHeight(),
             dietPlan.getActivity()));
     dietPlan.setDeficit(
-        CaloriesCalculator.kcalPercentage(dietPlan.getTdee(), dietPlanDTO.getGoal().getValue()));
+        CaloriesCalculator.calcDeficit(dietPlan.getTdee(), dietPlanDTO.getGoal().getValue()));
     dietPlan.setProtein(CaloriesCalculator.calcProtein(dietPlan.getDeficit()));
     dietPlan.setFat(CaloriesCalculator.calcFat(dietPlan.getDeficit()));
     dietPlan.setCarbs(CaloriesCalculator.calcCarbs(dietPlan.getDeficit()));
