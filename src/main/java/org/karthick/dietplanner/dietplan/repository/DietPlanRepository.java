@@ -1,4 +1,4 @@
-package org.karthick.dietplanner.dietplan;
+package org.karthick.dietplanner.dietplan.repository;
 
 import java.util.List;
 

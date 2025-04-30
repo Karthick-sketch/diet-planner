@@ -3,6 +3,9 @@ package org.karthick.dietplanner.dietplan;
 import lombok.AllArgsConstructor;
 import org.karthick.dietplanner.config.ModelMapperConfig;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
+import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
+import org.karthick.dietplanner.dietplan.repository.DietPlanRepository;
+import org.karthick.dietplanner.dietplan.repository.DietPlanTrackRepository;
 import org.karthick.dietplanner.dietplan.dto.DietPlanDTO;
 import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
 import org.karthick.dietplanner.exception.EntityNotFoundException;
@@ -18,6 +21,7 @@ import java.util.Optional;
 @Service
 public class DietPlanService {
   private DietPlanRepository dietPlannerRepository;
+  private DietPlanTrackRepository dietPlanTrackRepository;
   private ModelMapperConfig mapper;
 
   public List<DietPlan> findAllDietPlans() {
@@ -72,5 +76,9 @@ public class DietPlanService {
         CaloriesCalculator.macrosPercentage(macros, 30),
         CaloriesCalculator.macrosPercentage(macros, 15),
         CaloriesCalculator.macrosPercentage(macros, 25));
+  }
+
+  public DietPlanTrack trackDietPlan(DietPlanTrack dietPlanTrack) {
+    return dietPlanTrackRepository.save(dietPlanTrack);
   }
 }
