@@ -12,8 +12,11 @@ import org.karthick.dietplanner.exception.EntityNotFoundException;
 import org.karthick.dietplanner.shared.model.Macros;
 import org.karthick.dietplanner.shared.model.MealKcal;
 import org.karthick.dietplanner.util.CaloriesCalculator;
+import org.karthick.dietplanner.util.constants.MacrosConstants;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +63,36 @@ public class DietPlanService {
     return dietPlan;
   }
 
+  public DietPlanTrack findDietPlanTrackByDietPlanId(String dietPlanId) {
+    DietPlan dietPlan = findDietPlanById(dietPlanId);
+    return dietPlanTrackRepository
+        .findByDateAndDietPlanId(getToday(), dietPlanId)
+        .orElseGet(() -> new DietPlanTrack(dietPlan, splitForMealKcal(dietPlan), getToday()));
+  }
+
+  public DietPlanTrack addMacros(String dietPlanId, String category, Macros macros) {
+    DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlanId);
+    dietPlanTrack.getDeficit().addTaken(CaloriesCalculator.calcDeficit(macros));
+    Macros dietPlanMacros = getMacrosByCategory(dietPlanTrack.getMealKcal(), category);
+    dietPlanMacros.getProtein().addTaken(macros.getProtein().getTaken());
+    dietPlanMacros.getFat().addTaken(macros.getFat().getTaken());
+    dietPlanMacros.getCarbs().addTaken(macros.getCarbs().getTaken());
+    return dietPlanTrackRepository.save(dietPlanTrack);
+  }
+
+  private String getToday() {
+    return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+  }
+
+  private Macros getMacrosByCategory(MealKcal mealKcal, String category) {
+    return switch (category) {
+      case MacrosConstants.BREAKFAST -> mealKcal.getBreakfast();
+      case MacrosConstants.LUNCH -> mealKcal.getLunch();
+      case MacrosConstants.DINNER -> mealKcal.getDinner();
+      default -> mealKcal.getSnack();
+    };
+  }
+
   public MealKcal getMealKcal(String id) {
     Optional<DietPlan> dietPlan = this.dietPlannerRepository.findById(id);
     if (dietPlan.isPresent()) {
@@ -76,9 +109,5 @@ public class DietPlanService {
         CaloriesCalculator.macrosPercentage(macros, 30),
         CaloriesCalculator.macrosPercentage(macros, 15),
         CaloriesCalculator.macrosPercentage(macros, 25));
-  }
-
-  public DietPlanTrack trackDietPlan(DietPlanTrack dietPlanTrack) {
-    return dietPlanTrackRepository.save(dietPlanTrack);
   }
 }

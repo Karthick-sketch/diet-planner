@@ -37,9 +37,11 @@ public class FoodService {
     Meals meals = new Meals();
     double p = 0, f = 0, c = 0;
     List<String> foodNames = new ArrayList<>();
-    while (macros.getProtein() > 0 || macros.getCarbs() > 0 || macros.getFat() > 0) {
+    while (macros.getProtein().getTotal() > 0
+        || macros.getCarbs().getTotal() > 0
+        || macros.getFat().getTotal() > 0) {
       for (Food food : foodItems.getProteins()) {
-        if (food.getGProtein() + p < mealKcal.getBreakfast().getProtein()) {
+        if (food.getGProtein() + p < mealKcal.getBreakfast().getProtein().getTotal()) {
           foodNames.add(food.getName());
           p += food.getGProtein();
           f += food.getGFat();
@@ -47,7 +49,7 @@ public class FoodService {
         }
       }
       for (Food food : foodItems.getFats()) {
-        if (food.getGFat() + f < mealKcal.getBreakfast().getFat()) {
+        if (food.getGFat() + f < mealKcal.getBreakfast().getFat().getTotal()) {
           foodNames.add(food.getName());
           p += food.getGProtein();
           f += food.getGFat();
@@ -55,7 +57,7 @@ public class FoodService {
         }
       }
       for (Food food : foodItems.getCarbs()) {
-        if (food.getGCarbs() + c < mealKcal.getBreakfast().getCarbs()) {
+        if (food.getGCarbs() + c < mealKcal.getBreakfast().getCarbs().getTotal()) {
           foodNames.add(food.getName());
           p += food.getGProtein();
           f += food.getGFat();
@@ -73,9 +75,9 @@ public class FoodService {
   private double adjustServing(Food food, Macros targetMacros) {
     return Math.min(
         Math.min(
-            getTarget(food.getGProtein(), targetMacros.getProtein()),
-            getTarget(food.getGCarbs(), targetMacros.getCarbs())),
-        Math.min(getTarget(food.getGFat(), targetMacros.getFat()), 1.0));
+            getTarget(food.getGProtein(), targetMacros.getProtein().getTotal()),
+            getTarget(food.getGCarbs(), targetMacros.getCarbs().getTotal())),
+        Math.min(getTarget(food.getGFat(), targetMacros.getFat().getTotal()), 1.0));
   }
 
   private double getTarget(double actual, double target) {

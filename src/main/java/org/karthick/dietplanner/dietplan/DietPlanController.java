@@ -4,7 +4,11 @@ import lombok.AllArgsConstructor;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.dto.DietPlanDTO;
 import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
+import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
+import org.karthick.dietplanner.exception.BadRequestException;
+import org.karthick.dietplanner.shared.model.Macros;
 import org.karthick.dietplanner.shared.model.MealKcal;
+import org.karthick.dietplanner.util.constants.MacrosConstants;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +40,20 @@ public class DietPlanController {
     return dietPlanService.createDietPlan(dietPlanDTO);
   }
 
-  @GetMapping("meal-kcal/{id}")
+  @GetMapping("/track/{dietPlanId}")
+  public DietPlanTrack getDietPlanTrack(@PathVariable String dietPlanId) {
+    return dietPlanService.findDietPlanTrackByDietPlanId(dietPlanId);
+  }
+
+  @PostMapping("/{category}/{dietPlanId}")
+  public DietPlanTrack addMacros(@PathVariable String category, @PathVariable String dietPlanId, @RequestBody Macros macros) {
+    if (MacrosConstants.validateMacro(category)) {
+      return dietPlanService.addMacros(dietPlanId, category, macros);
+    }
+    throw new BadRequestException("Invalid macro category");
+  }
+
+  @GetMapping("/meal-kcal/{id}")
   public MealKcal getMealKcal(@PathVariable("id") String id) {
     return this.dietPlanService.getMealKcal(id);
   }

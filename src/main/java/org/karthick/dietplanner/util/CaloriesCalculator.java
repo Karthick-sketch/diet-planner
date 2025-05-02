@@ -18,9 +18,9 @@ public final class CaloriesCalculator {
 
   public static Macros macrosPercentage(Macros macros, int percent) {
     return new Macros(
-        percentageOf(macros.getProtein(), percent),
-        percentageOf(macros.getFat(), percent),
-        percentageOf(macros.getCarbs(), percent));
+        percentageOf(macros.getProtein().getTotal(), percent),
+        percentageOf(macros.getFat().getTotal(), percent),
+        percentageOf(macros.getCarbs().getTotal(), percent));
   }
 
   public static long calcDeficit(double kcal, int percent) {
@@ -33,6 +33,12 @@ public final class CaloriesCalculator {
     } else {
       return round + 100;
     }
+  }
+
+  public static double calcDeficit(Macros macros) {
+    return macros.getProtein().getTaken() * 4
+        + macros.getFat().getTaken() * 9
+        + macros.getCarbs().getTaken() * 4;
   }
 
   public static long calcProtein(double deficit) {

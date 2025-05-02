@@ -13,8 +13,7 @@ import java.util.List;
 @Setter
 @Document(collection = "diet_plans")
 public class DietPlan {
-  @Id
-  private String id;
+  @Id private String id;
   private String title;
   private String description;
   private int age;

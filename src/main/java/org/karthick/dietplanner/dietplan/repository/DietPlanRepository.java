@@ -8,6 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface DietPlanRepository extends MongoRepository<DietPlan, String> {
-    @Query("{}, { _id: 1, title: 1, description: 1, deficit: 1}")
-    List<DietPlanListItemDTO> findAllDietPlanList();
+  @Query(value = "{}", fields = "{ _id: 1, title: 1, description: 1, deficit: 1 }")
+  List<DietPlanListItemDTO> findAllDietPlanList();
 }

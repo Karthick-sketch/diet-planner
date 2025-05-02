@@ -10,7 +10,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Macros {
-  private double protein;
-  private double fat;
-  private double carbs;
+  private Calories protein;
+  private Calories fat;
+  private Calories carbs;
+
+  public Macros(double protein, double fat, double carbs) {
+    this.protein = new Calories(protein);
+    this.fat = new Calories(fat);
+    this.carbs = new Calories(carbs);
+  }
 }
