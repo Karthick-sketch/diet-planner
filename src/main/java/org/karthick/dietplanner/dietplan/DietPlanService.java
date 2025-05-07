@@ -70,6 +70,10 @@ public class DietPlanService {
         .orElseGet(() -> new DietPlanTrack(dietPlan, splitForMealKcal(dietPlan), getToday()));
   }
 
+  private String getToday() {
+    return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+  }
+
   public DietPlanTrack addMacros(String dietPlanId, String category, Macros macros) {
     DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlanId);
     dietPlanTrack.getDeficit().addTaken(CaloriesCalculator.calcDeficit(macros));
@@ -78,10 +82,6 @@ public class DietPlanService {
     dietPlanMacros.getFat().addTaken(macros.getFat().getTaken());
     dietPlanMacros.getCarbs().addTaken(macros.getCarbs().getTaken());
     return dietPlanTrackRepository.save(dietPlanTrack);
-  }
-
-  private String getToday() {
-    return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
   }
 
   private Macros getMacrosByCategory(MealKcal mealKcal, String category) {

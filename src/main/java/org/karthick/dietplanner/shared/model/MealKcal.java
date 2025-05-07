@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MealKcal {
   private Macros breakfast;
-  public Macros lunch;
+  private Macros lunch;
   private Macros snack;
   private Macros dinner;
 }
