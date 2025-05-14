@@ -1,14 +1,13 @@
 package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
-import org.karthick.dietplanner.config.ModelMapperConfig;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
 import org.karthick.dietplanner.dietplan.repository.DietPlanRepository;
 import org.karthick.dietplanner.dietplan.repository.DietPlanTrackRepository;
-import org.karthick.dietplanner.dietplan.dto.DietPlanDTO;
 import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
 import org.karthick.dietplanner.exception.EntityNotFoundException;
+import org.karthick.dietplanner.shared.model.Calories;
 import org.karthick.dietplanner.shared.model.Macros;
 import org.karthick.dietplanner.shared.model.MealKcal;
 import org.karthick.dietplanner.util.CaloriesCalculator;
@@ -25,7 +24,6 @@ import java.util.Optional;
 public class DietPlanService {
   private DietPlanRepository dietPlannerRepository;
   private DietPlanTrackRepository dietPlanTrackRepository;
-  private ModelMapperConfig mapper;
 
   public List<DietPlan> findAllDietPlans() {
     return dietPlannerRepository.findAll();
@@ -43,31 +41,50 @@ public class DietPlanService {
     return dietPlan.get();
   }
 
-  public DietPlan createDietPlan(DietPlanDTO dietPlanDTO) {
-    return dietPlannerRepository.save(this.processDietPlan(dietPlanDTO));
-  }
-
-  private DietPlan processDietPlan(DietPlanDTO dietPlanDTO) {
-    DietPlan dietPlan = mapper.convertToEntity(dietPlanDTO, DietPlan.class);
-    dietPlan.setTdee(
-        CaloriesCalculator.findTDEE(
-            dietPlanDTO.getAge(),
-            dietPlan.getWeight(),
-            dietPlan.getHeight(),
-            dietPlan.getActivity()));
-    dietPlan.setDeficit(
-        CaloriesCalculator.calcDeficit(dietPlan.getTdee(), dietPlanDTO.getGoal().getValue()));
-    dietPlan.setProtein(CaloriesCalculator.calcProtein(dietPlan.getDeficit()));
-    dietPlan.setFat(CaloriesCalculator.calcFat(dietPlan.getDeficit()));
-    dietPlan.setCarbs(CaloriesCalculator.calcCarbs(dietPlan.getDeficit()));
+  public DietPlan createDietPlan(DietPlan dietPlan) {
+    dietPlan.setTodayWeight(dietPlan.getWeight());
+    dietPlannerRepository.save(dietPlan);
+    createDietPlanTrack(dietPlan);
     return dietPlan;
   }
 
+  private DietPlanTrack processDietPlan(DietPlan dietPlan, DietPlanTrack dietPlanTrack) {
+    dietPlanTrack.setTdee(
+        CaloriesCalculator.findTDEE(
+            dietPlan.getAge(),
+            dietPlanTrack.getWeight(),
+            dietPlan.getHeight(),
+            dietPlan.getActivity()));
+    double deficit =
+        CaloriesCalculator.calcDeficit(dietPlanTrack.getTdee(), dietPlan.getGoal().getValue());
+    dietPlanTrack.setDeficit(new Calories(deficit));
+    dietPlanTrack.setProtein(new Calories(CaloriesCalculator.calcProtein(deficit)));
+    dietPlanTrack.setFat(new Calories(CaloriesCalculator.calcFat(deficit)));
+    dietPlanTrack.setCarbs(new Calories(CaloriesCalculator.calcCarbs(deficit)));
+    return dietPlanTrack;
+  }
+
+  public DietPlanTrack createDietPlanTrack(DietPlan dietPlan) {
+    return dietPlanTrackRepository.save(
+        processDietPlan(
+            dietPlan, new DietPlanTrack(dietPlan.getTodayWeight(), getToday(), dietPlan.getId())));
+  }
+
   public DietPlanTrack findDietPlanTrackByDietPlanId(String dietPlanId) {
+    String today = getToday();
     DietPlan dietPlan = findDietPlanById(dietPlanId);
     return dietPlanTrackRepository
-        .findByDateAndDietPlanId(getToday(), dietPlanId)
-        .orElseGet(() -> new DietPlanTrack(dietPlan, splitForMealKcal(dietPlan), getToday()));
+        .findByDateAndDietPlanId(today, dietPlanId)
+        .orElseGet(() -> createDietPlanTrack(dietPlan));
+  }
+
+  public DietPlanTrack trackWeight(String dietPlanId, double weight) {
+    DietPlan dietPlan = findDietPlanById(dietPlanId);
+    dietPlan.setTodayWeight(weight);
+    dietPlannerRepository.save(dietPlan);
+    DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlanId);
+    dietPlanTrack.setWeight(weight);
+    return dietPlanTrackRepository.save(processDietPlan(dietPlan, dietPlanTrack));
   }
 
   private String getToday() {
@@ -93,17 +110,18 @@ public class DietPlanService {
     };
   }
 
-  public MealKcal getMealKcal(String id) {
-    Optional<DietPlan> dietPlan = this.dietPlannerRepository.findById(id);
-    if (dietPlan.isPresent()) {
-      return splitForMealKcal(dietPlan.get());
-    } else {
+  public MealKcal getMealKcal(String dietPlanId) {
+    Optional<DietPlanTrack> dietPlanTrack =
+        dietPlanTrackRepository.findByDateAndDietPlanId(getToday(), dietPlanId);
+    if (dietPlanTrack.isEmpty()) {
       throw new EntityNotFoundException("No macros found.");
     }
+    return splitForMealKcal(dietPlanTrack.get());
   }
 
-  private MealKcal splitForMealKcal(DietPlan dietPlan) {
-    Macros macros = new Macros(dietPlan.getProtein(), dietPlan.getFat(), dietPlan.getCarbs());
+  private MealKcal splitForMealKcal(DietPlanTrack dietPlanTrack) {
+    Macros macros =
+        new Macros(dietPlanTrack.getProtein(), dietPlanTrack.getFat(), dietPlanTrack.getCarbs());
     return new MealKcal(
         CaloriesCalculator.macrosPercentage(macros, 30),
         CaloriesCalculator.macrosPercentage(macros, 30),

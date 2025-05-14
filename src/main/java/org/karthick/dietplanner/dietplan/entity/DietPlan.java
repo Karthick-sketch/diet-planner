@@ -20,15 +20,11 @@ public class DietPlan {
   private Gender gender;
   private double height;
   private double weight;
+  private double todayWeight;
   private Goal goal;
   private double finalGoal;
   private TimePeriod timePeriod;
   private Activity activity;
   private FoodType foodType;
   private List<String> foodFilters;
-  private double tdee;
-  private double deficit;
-  private double protein;
-  private double fat;
-  private double carbs;
 }

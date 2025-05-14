@@ -18,16 +18,16 @@ public class DietPlanTrack {
   private double weight;
   private double tdee;
   private Calories deficit;
+  private Calories protein;
+  private Calories carbs;
+  private Calories fat;
   private MealKcal mealKcal;
   private String date;
   private String dietPlanId;
 
-  public DietPlanTrack(DietPlan dietPlan, MealKcal mealKcal, String date) {
-    this.weight = dietPlan.getWeight();
-    this.tdee = dietPlan.getTdee();
-    this.deficit = new Calories(dietPlan.getDeficit());
-    this.mealKcal = mealKcal;
+  public DietPlanTrack(double weight, String date, String dietPlanId) {
+    this.weight = weight;
     this.date = date;
-    this.dietPlanId = dietPlan.getId();
+    this.dietPlanId = dietPlanId;
   }
 }

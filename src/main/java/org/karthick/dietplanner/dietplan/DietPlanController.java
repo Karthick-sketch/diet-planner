@@ -2,7 +2,6 @@ package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
-import org.karthick.dietplanner.dietplan.dto.DietPlanDTO;
 import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
 import org.karthick.dietplanner.exception.BadRequestException;
@@ -36,8 +35,13 @@ public class DietPlanController {
   }
 
   @PostMapping
-  public DietPlan createDietPlan(@RequestBody() DietPlanDTO dietPlanDTO) {
-    return dietPlanService.createDietPlan(dietPlanDTO);
+  public DietPlan createDietPlan(@RequestBody() DietPlan dietPlan) {
+    return dietPlanService.createDietPlan(dietPlan);
+  }
+
+  @PostMapping("/track-weight/{dietPlanId}")
+  public DietPlanTrack trackWeight(@PathVariable String dietPlanId, @RequestBody double weight) {
+    return dietPlanService.trackWeight(dietPlanId, weight);
   }
 
   @GetMapping("/track/{dietPlanId}")
