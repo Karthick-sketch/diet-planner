@@ -61,6 +61,7 @@ public class DietPlanService {
     dietPlanTrack.setProtein(new Calories(CaloriesCalculator.calcProtein(deficit)));
     dietPlanTrack.setFat(new Calories(CaloriesCalculator.calcFat(deficit)));
     dietPlanTrack.setCarbs(new Calories(CaloriesCalculator.calcCarbs(deficit)));
+    dietPlanTrack.setMealKcal(splitForMealKcal(dietPlanTrack));
     return dietPlanTrack;
   }
 
@@ -78,7 +79,7 @@ public class DietPlanService {
         .orElseGet(() -> createDietPlanTrack(dietPlan));
   }
 
-  public DietPlanTrack trackWeight(String dietPlanId, double weight) {
+  public DietPlanTrack addWeight(String dietPlanId, double weight) {
     DietPlan dietPlan = findDietPlanById(dietPlanId);
     dietPlan.setTodayWeight(weight);
     dietPlannerRepository.save(dietPlan);

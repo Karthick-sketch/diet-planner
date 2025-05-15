@@ -39,9 +39,9 @@ public class DietPlanController {
     return dietPlanService.createDietPlan(dietPlan);
   }
 
-  @PostMapping("/track-weight/{dietPlanId}")
-  public DietPlanTrack trackWeight(@PathVariable String dietPlanId, @RequestBody double weight) {
-    return dietPlanService.trackWeight(dietPlanId, weight);
+  @PostMapping("/add-weight/{dietPlanId}")
+  public DietPlanTrack addWeight(@PathVariable String dietPlanId, @RequestBody double weight) {
+    return dietPlanService.addWeight(dietPlanId, weight);
   }
 
   @GetMapping("/track/{dietPlanId}")
