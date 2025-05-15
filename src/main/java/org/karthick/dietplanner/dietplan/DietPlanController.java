@@ -50,9 +50,9 @@ public class DietPlanController {
   }
 
   @PostMapping("/{category}/{dietPlanId}")
-  public DietPlanTrack addMacros(@PathVariable String category, @PathVariable String dietPlanId, @RequestBody Macros macros) {
+  public DietPlanTrack updateMacros(@PathVariable String category, @PathVariable String dietPlanId, @RequestBody Macros macros) {
     if (MacrosConstants.validateMacro(category)) {
-      return dietPlanService.addMacros(dietPlanId, category, macros);
+      return dietPlanService.updateMacros(dietPlanId, category, macros);
     }
     throw new BadRequestException("Invalid macro category");
   }

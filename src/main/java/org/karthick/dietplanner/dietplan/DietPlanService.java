@@ -92,14 +92,40 @@ public class DietPlanService {
     return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
   }
 
-  public DietPlanTrack addMacros(String dietPlanId, String category, Macros macros) {
+  public DietPlanTrack updateMacros(String dietPlanId, String category, Macros macros) {
     DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlanId);
-    dietPlanTrack.getDeficit().addTaken(CaloriesCalculator.calcDeficit(macros));
+    dietPlanTrack.getDeficit().setTaken(CaloriesCalculator.calcDeficit(macros));
     Macros dietPlanMacros = getMacrosByCategory(dietPlanTrack.getMealKcal(), category);
-    dietPlanMacros.getProtein().addTaken(macros.getProtein().getTaken());
-    dietPlanMacros.getFat().addTaken(macros.getFat().getTaken());
-    dietPlanMacros.getCarbs().addTaken(macros.getCarbs().getTaken());
+    dietPlanMacros.getProtein().setTaken(macros.getProtein().getTaken());
+    dietPlanMacros.getFat().setTaken(macros.getFat().getTaken());
+    dietPlanMacros.getCarbs().setTaken(macros.getCarbs().getTaken());
+    adjustMacros(dietPlanTrack);
     return dietPlanTrackRepository.save(dietPlanTrack);
+  }
+
+  private void adjustMacros(DietPlanTrack dietPlanTrack) {
+    MealKcal mealKcal = dietPlanTrack.getMealKcal();
+    dietPlanTrack
+        .getProtein()
+        .setTaken(
+            mealKcal.getBreakfast().getProtein().getTaken()
+                + mealKcal.getLunch().getProtein().getTaken()
+                + mealKcal.getDinner().getProtein().getTaken()
+                + mealKcal.getSnack().getProtein().getTaken());
+    dietPlanTrack
+        .getCarbs()
+        .setTaken(
+            mealKcal.getBreakfast().getCarbs().getTaken()
+                + mealKcal.getLunch().getCarbs().getTaken()
+                + mealKcal.getDinner().getCarbs().getTaken()
+                + mealKcal.getSnack().getCarbs().getTaken());
+    dietPlanTrack
+        .getFat()
+        .setTaken(
+            mealKcal.getBreakfast().getFat().getTaken()
+                + mealKcal.getLunch().getFat().getTaken()
+                + mealKcal.getDinner().getFat().getTaken()
+                + mealKcal.getSnack().getFat().getTaken());
   }
 
   private Macros getMacrosByCategory(MealKcal mealKcal, String category) {

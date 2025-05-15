@@ -12,8 +12,4 @@ public class Calories {
   public Calories(double total) {
     this.total = total;
   }
-
-  public void addTaken(double taken) {
-    this.taken += taken;
-  }
 }
