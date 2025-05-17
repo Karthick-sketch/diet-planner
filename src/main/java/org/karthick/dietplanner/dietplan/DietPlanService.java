@@ -1,6 +1,7 @@
 package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
+import org.karthick.dietplanner.dietplan.dto.MetricsDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
 import org.karthick.dietplanner.dietplan.repository.DietPlanRepository;
@@ -14,9 +15,13 @@ import org.karthick.dietplanner.util.CaloriesCalculator;
 import org.karthick.dietplanner.util.constants.MacrosConstants;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.TextStyle;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -68,14 +73,14 @@ public class DietPlanService {
   public DietPlanTrack createDietPlanTrack(DietPlan dietPlan) {
     return dietPlanTrackRepository.save(
         processDietPlan(
-            dietPlan, new DietPlanTrack(dietPlan.getTodayWeight(), getToday(), dietPlan.getId())));
+            dietPlan,
+            new DietPlanTrack(dietPlan.getTodayWeight(), LocalDate.now(), dietPlan.getId())));
   }
 
   public DietPlanTrack findDietPlanTrackByDietPlanId(String dietPlanId) {
-    String today = getToday();
     DietPlan dietPlan = findDietPlanById(dietPlanId);
     return dietPlanTrackRepository
-        .findByDateAndDietPlanId(today, dietPlanId)
+        .findByDateAndDietPlanId(LocalDate.now(), dietPlanId)
         .orElseGet(() -> createDietPlanTrack(dietPlan));
   }
 
@@ -86,10 +91,6 @@ public class DietPlanService {
     DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlanId);
     dietPlanTrack.setWeight(weight);
     return dietPlanTrackRepository.save(processDietPlan(dietPlan, dietPlanTrack));
-  }
-
-  private String getToday() {
-    return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
   }
 
   public DietPlanTrack updateMacros(String dietPlanId, String category, Macros macros) {
@@ -139,7 +140,7 @@ public class DietPlanService {
 
   public MealKcal getMealKcal(String dietPlanId) {
     Optional<DietPlanTrack> dietPlanTrack =
-        dietPlanTrackRepository.findByDateAndDietPlanId(getToday(), dietPlanId);
+        dietPlanTrackRepository.findByDateAndDietPlanId(LocalDate.now(), dietPlanId);
     if (dietPlanTrack.isEmpty()) {
       throw new EntityNotFoundException("No macros found.");
     }
@@ -154,5 +155,31 @@ public class DietPlanService {
         CaloriesCalculator.macrosPercentage(macros, 30),
         CaloriesCalculator.macrosPercentage(macros, 15),
         CaloriesCalculator.macrosPercentage(macros, 25));
+  }
+
+  public MetricsDTO getMetricsByDateRange(String dietPlanId) {
+    Date[] dateRange = getOneWeekDateRange();
+    MetricsDTO metricsDTO = new MetricsDTO();
+    dietPlanTrackRepository
+        .findByDateRangeAndDietPlanId(dateRange[0], dateRange[1], dietPlanId)
+        .forEach(
+            dietPlanTrack -> {
+              metricsDTO.getDays().add(getDayName(dietPlanTrack.getDate()));
+              metricsDTO.getWeights().add(dietPlanTrack.getWeight());
+            });
+    return metricsDTO;
+  }
+
+  private Date[] getOneWeekDateRange() {
+    ZoneId zoneId = ZoneId.of("Asia/Kolkata");
+    LocalDate today = LocalDate.now();
+    return new Date[] {
+      Date.from(today.minusWeeks(1).atStartOfDay(zoneId).toInstant()),
+      Date.from(today.atTime(LocalTime.MAX).atZone(zoneId).toInstant())
+    };
+  }
+
+  private String getDayName(LocalDate date) {
+    return date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
   }
 }

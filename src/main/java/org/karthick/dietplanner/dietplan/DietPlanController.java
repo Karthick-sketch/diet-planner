@@ -1,6 +1,7 @@
 package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
+import org.karthick.dietplanner.dietplan.dto.MetricsDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
@@ -50,7 +51,8 @@ public class DietPlanController {
   }
 
   @PostMapping("/{category}/{dietPlanId}")
-  public DietPlanTrack updateMacros(@PathVariable String category, @PathVariable String dietPlanId, @RequestBody Macros macros) {
+  public DietPlanTrack updateMacros(
+      @PathVariable String category, @PathVariable String dietPlanId, @RequestBody Macros macros) {
     if (MacrosConstants.validateMacro(category)) {
       return dietPlanService.updateMacros(dietPlanId, category, macros);
     }
@@ -60,5 +62,10 @@ public class DietPlanController {
   @GetMapping("/meal-kcal/{id}")
   public MealKcal getMealKcal(@PathVariable("id") String id) {
     return this.dietPlanService.getMealKcal(id);
+  }
+
+  @GetMapping("/metrics/{dietPlanId}")
+  public MetricsDTO getMetricsByDateRange(@PathVariable String dietPlanId) {
+    return dietPlanService.getMetricsByDateRange(dietPlanId);
   }
 }
