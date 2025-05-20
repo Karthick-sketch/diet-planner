@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
   private final UserService userService;
 
-  @GetMapping("{username}")
+  @GetMapping("/{username}")
   public UserDTO getUser(@PathVariable String username) {
     return userService.findUserDTOByUsername(username);
   }
