@@ -8,6 +8,7 @@ import org.karthick.dietplanner.dietplan.repository.DietPlanRepository;
 import org.karthick.dietplanner.dietplan.repository.DietPlanTrackRepository;
 import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
 import org.karthick.dietplanner.exception.EntityNotFoundException;
+import org.karthick.dietplanner.security.UserSession;
 import org.karthick.dietplanner.shared.model.Calories;
 import org.karthick.dietplanner.shared.model.Macros;
 import org.karthick.dietplanner.shared.model.MealKcal;
@@ -27,27 +28,30 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 public class DietPlanService {
-  private DietPlanRepository dietPlannerRepository;
-  private DietPlanTrackRepository dietPlanTrackRepository;
+  private final DietPlanRepository dietPlannerRepository;
+  private final DietPlanTrackRepository dietPlanTrackRepository;
+  private final UserSession userSession;
 
   public List<DietPlan> findAllDietPlans() {
-    return dietPlannerRepository.findAll();
+    return dietPlannerRepository.findByUserId(userSession.getAuthenticatedUserId());
   }
 
   public List<DietPlanListItemDTO> findAllDietPlanList() {
-    return dietPlannerRepository.findAllDietPlanList();
+    return dietPlannerRepository.findAllDietPlanListByUserId(userSession.getAuthenticatedUserId());
   }
 
   public DietPlan findDietPlanById(String id) {
-    Optional<DietPlan> dietPlan = dietPlannerRepository.findById(id);
+    Optional<DietPlan> dietPlan =
+        dietPlannerRepository.findByIdAndUserId(id, userSession.getAuthenticatedUserId());
     if (dietPlan.isEmpty()) {
-      throw new EntityNotFoundException("The Diet plan with the ID of '" + id + "' is not found");
+      throw new EntityNotFoundException("Diet plan not found");
     }
     return dietPlan.get();
   }
 
   public DietPlan createDietPlan(DietPlan dietPlan) {
     dietPlan.setTodayWeight(dietPlan.getWeight());
+    dietPlan.setUserId(userSession.getAuthenticatedUserId());
     dietPlannerRepository.save(dietPlan);
     createDietPlanTrack(dietPlan);
     return dietPlan;

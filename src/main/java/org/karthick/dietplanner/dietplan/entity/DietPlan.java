@@ -27,4 +27,5 @@ public class DietPlan {
   private Activity activity;
   private FoodType foodType;
   private List<String> foodFilters;
+  private String userId;
 }

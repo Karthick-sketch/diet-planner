@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/diet-plan")
 public class DietPlanController {
-  private DietPlanService dietPlanService;
+  private final DietPlanService dietPlanService;
 
   @GetMapping("/all")
   public List<DietPlan> getAllDietPlans() {
