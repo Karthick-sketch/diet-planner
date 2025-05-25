@@ -29,9 +29,9 @@ public class DietPlanController {
     return dietPlanService.findAllDietPlanList();
   }
 
-  @GetMapping("/{id}")
-  public DietPlan getDietPlan(@PathVariable String id) {
-    return dietPlanService.findDietPlanById(id);
+  @GetMapping
+  public DietPlan getDietPlan() {
+    return dietPlanService.findDietPlanByUserId();
   }
 
   @PostMapping
@@ -63,8 +63,8 @@ public class DietPlanController {
     return this.dietPlanService.getMealKcal(id);
   }
 
-  @GetMapping("/metrics/{dietPlanId}")
-  public MetricsDTO getMetricsByDateRange(@PathVariable String dietPlanId) {
-    return dietPlanService.getMetricsByDateRange(dietPlanId);
+  @GetMapping("/metrics")
+  public MetricsDTO getMetricsByDateRange() {
+    return dietPlanService.getMetricsByDateRange();
   }
 }

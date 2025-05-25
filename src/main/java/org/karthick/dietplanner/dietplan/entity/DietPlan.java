@@ -28,4 +28,5 @@ public class DietPlan {
   private FoodType foodType;
   private List<String> foodFilters;
   private String userId;
+  private boolean active;
 }

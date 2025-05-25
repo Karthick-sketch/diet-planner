@@ -16,4 +16,6 @@ public interface DietPlanRepository extends MongoRepository<DietPlan, String> {
   List<DietPlan> findByUserId(String userId);
 
   Optional<DietPlan> findByIdAndUserId(String id, String userId);
+
+  Optional<DietPlan> findByUserIdAndActiveIsTrue(String userId);
 }

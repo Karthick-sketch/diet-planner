@@ -49,6 +49,15 @@ public class DietPlanService {
     return dietPlan.get();
   }
 
+  public DietPlan findDietPlanByUserId() {
+    Optional<DietPlan> dietPlan =
+        dietPlannerRepository.findByUserIdAndActiveIsTrue(userSession.getAuthenticatedUserId());
+    if (dietPlan.isEmpty()) {
+      throw new EntityNotFoundException("Diet plan not found");
+    }
+    return dietPlan.get();
+  }
+
   public DietPlan createDietPlan(DietPlan dietPlan) {
     dietPlan.setTodayWeight(dietPlan.getWeight());
     dietPlan.setUserId(userSession.getAuthenticatedUserId());
@@ -161,11 +170,12 @@ public class DietPlanService {
         CaloriesCalculator.macrosPercentage(macros, 25));
   }
 
-  public MetricsDTO getMetricsByDateRange(String dietPlanId) {
+  public MetricsDTO getMetricsByDateRange() {
     Date[] dateRange = getOneWeekDateRange();
     MetricsDTO metricsDTO = new MetricsDTO();
+    DietPlan dietPlan = findDietPlanByUserId();
     dietPlanTrackRepository
-        .findByDateRangeAndDietPlanId(dateRange[0], dateRange[1], dietPlanId)
+        .findByDateRangeAndDietPlanId(dateRange[0], dateRange[1], dietPlan.getId())
         .forEach(
             dietPlanTrack -> {
               metricsDTO.getDays().add(getDayName(dietPlanTrack.getDate()));
