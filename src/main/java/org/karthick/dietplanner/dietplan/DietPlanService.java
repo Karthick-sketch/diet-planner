@@ -108,12 +108,12 @@ public class DietPlanService {
 
   public DietPlanTrack updateMacros(String dietPlanId, String category, Macros macros) {
     DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlanId);
-    dietPlanTrack.getDeficit().setTaken(CaloriesCalculator.calcDeficit(macros));
     Macros dietPlanMacros = getMacrosByCategory(dietPlanTrack.getMealKcal(), category);
     dietPlanMacros.getProtein().setTaken(macros.getProtein().getTaken());
     dietPlanMacros.getFat().setTaken(macros.getFat().getTaken());
     dietPlanMacros.getCarbs().setTaken(macros.getCarbs().getTaken());
     adjustMacros(dietPlanTrack);
+    addDeficitTaken(dietPlanTrack);
     return dietPlanTrackRepository.save(dietPlanTrack);
   }
 
@@ -140,6 +140,12 @@ public class DietPlanService {
                 + mealKcal.getLunch().getFat().getTaken()
                 + mealKcal.getDinner().getFat().getTaken()
                 + mealKcal.getSnack().getFat().getTaken());
+  }
+
+  private void addDeficitTaken(DietPlanTrack dietPlanTrack) {
+    Macros macros =
+        new Macros(dietPlanTrack.getProtein(), dietPlanTrack.getFat(), dietPlanTrack.getCarbs());
+    dietPlanTrack.getDeficit().setTaken(CaloriesCalculator.calcDeficit(macros));
   }
 
   private Macros getMacrosByCategory(MealKcal mealKcal, String category) {
