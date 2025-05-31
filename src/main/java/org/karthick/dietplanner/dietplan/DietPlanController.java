@@ -67,4 +67,9 @@ public class DietPlanController {
   public MetricsDTO getMetricsByDateRange() {
     return dietPlanService.getMetricsByDateRange();
   }
+
+  @GetMapping("/active-plans")
+  public boolean isThereAnyActivePlans() {
+    return dietPlanService.isThereAnyActivePlans();
+  }
 }

@@ -9,8 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 public interface DietPlanRepository extends MongoRepository<DietPlan, String> {
-  //  @Query(value = "{}", fields = "{ _id: 1, title: 1, description: 1, deficit: 1 }")
-  @Query(value = "{ userId:  ?0 }", fields = "{ _id: 1, title: 1, description: 1 }")
+  @Query(value = "{ userId:  ?0 }", fields = "{ _id: 1, title: 1 }")
   List<DietPlanListItemDTO> findAllDietPlanListByUserId(String authenticatedUserId);
 
   List<DietPlan> findByUserId(String userId);
@@ -18,4 +17,6 @@ public interface DietPlanRepository extends MongoRepository<DietPlan, String> {
   Optional<DietPlan> findByIdAndUserId(String id, String userId);
 
   Optional<DietPlan> findByUserIdAndActiveIsTrue(String userId);
+
+  Optional<DietPlan> findByActiveTrue();
 }

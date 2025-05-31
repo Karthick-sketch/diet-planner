@@ -7,15 +7,13 @@ import org.karthick.dietplanner.shared.model.TimePeriod;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Document(collection = "diet_plans")
 public class DietPlan {
   @Id private String id;
   private String title;
-  private String description;
+  private Plan plan;
   private int age;
   private Gender gender;
   private double height;
@@ -25,8 +23,6 @@ public class DietPlan {
   private double finalGoal;
   private TimePeriod timePeriod;
   private Activity activity;
-  private FoodType foodType;
-  private List<String> foodFilters;
   private String userId;
   private boolean active;
 }

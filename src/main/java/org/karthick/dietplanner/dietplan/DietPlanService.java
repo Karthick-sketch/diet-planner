@@ -61,6 +61,7 @@ public class DietPlanService {
   public DietPlan createDietPlan(DietPlan dietPlan) {
     dietPlan.setTodayWeight(dietPlan.getWeight());
     dietPlan.setUserId(userSession.getAuthenticatedUserId());
+    dietPlan.setActive(true);
     dietPlannerRepository.save(dietPlan);
     createDietPlanTrack(dietPlan);
     return dietPlan;
@@ -112,9 +113,23 @@ public class DietPlanService {
     dietPlanMacros.getProtein().setTaken(macros.getProtein().getTaken());
     dietPlanMacros.getFat().setTaken(macros.getFat().getTaken());
     dietPlanMacros.getCarbs().setTaken(macros.getCarbs().getTaken());
+    dietPlanTrack.getDeficit().setTaken(calcDeficitTaken(dietPlanTrack));
     adjustMacros(dietPlanTrack);
-    addDeficitTaken(dietPlanTrack);
     return dietPlanTrackRepository.save(dietPlanTrack);
+  }
+
+  private Macros getMacrosByCategory(MealKcal mealKcal, String category) {
+    return switch (category) {
+      case MacrosConstants.BREAKFAST -> mealKcal.getBreakfast();
+      case MacrosConstants.LUNCH -> mealKcal.getLunch();
+      case MacrosConstants.DINNER -> mealKcal.getDinner();
+      default -> mealKcal.getSnack();
+    };
+  }
+
+  private double calcDeficitTaken(DietPlanTrack dietPlanTrack) {
+    return CaloriesCalculator.calcDeficit(
+        new Macros(dietPlanTrack.getProtein(), dietPlanTrack.getFat(), dietPlanTrack.getCarbs()));
   }
 
   private void adjustMacros(DietPlanTrack dietPlanTrack) {
@@ -140,21 +155,6 @@ public class DietPlanService {
                 + mealKcal.getLunch().getFat().getTaken()
                 + mealKcal.getDinner().getFat().getTaken()
                 + mealKcal.getSnack().getFat().getTaken());
-  }
-
-  private void addDeficitTaken(DietPlanTrack dietPlanTrack) {
-    Macros macros =
-        new Macros(dietPlanTrack.getProtein(), dietPlanTrack.getFat(), dietPlanTrack.getCarbs());
-    dietPlanTrack.getDeficit().setTaken(CaloriesCalculator.calcDeficit(macros));
-  }
-
-  private Macros getMacrosByCategory(MealKcal mealKcal, String category) {
-    return switch (category) {
-      case MacrosConstants.BREAKFAST -> mealKcal.getBreakfast();
-      case MacrosConstants.LUNCH -> mealKcal.getLunch();
-      case MacrosConstants.DINNER -> mealKcal.getDinner();
-      default -> mealKcal.getSnack();
-    };
   }
 
   public MealKcal getMealKcal(String dietPlanId) {
@@ -201,5 +201,9 @@ public class DietPlanService {
 
   private String getDayName(LocalDate date) {
     return date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+  }
+
+  public boolean isThereAnyActivePlans() {
+    return dietPlannerRepository.findByActiveTrue().isPresent();
   }
 }
