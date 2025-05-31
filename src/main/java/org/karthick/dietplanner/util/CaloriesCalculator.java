@@ -23,6 +23,10 @@ public final class CaloriesCalculator {
         percentageOf(macros.getCarbs().getTotal(), percent));
   }
 
+  public static long calcPercentage(double value, double maxValue) {
+    return Math.round((value / maxValue) * 100);
+  }
+
   public static long calcDeficit(double kcal, int percent) {
     long deficit = CaloriesCalculator.kcalPercentage(kcal, percent);
     long round = deficit / 100 * 100;

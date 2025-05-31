@@ -20,10 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
@@ -177,17 +174,19 @@ public class DietPlanService {
   }
 
   public MetricsDTO getMetricsByDateRange() {
+    List<String> days = new ArrayList<>();
+    List<Double> weights = new ArrayList<>();
     Date[] dateRange = getOneWeekDateRange();
-    MetricsDTO metricsDTO = new MetricsDTO();
     DietPlan dietPlan = findDietPlanByUserId();
+    DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlan.getId());
     dietPlanTrackRepository
         .findByDateRangeAndDietPlanId(dateRange[0], dateRange[1], dietPlan.getId())
         .forEach(
-            dietPlanTrack -> {
-              metricsDTO.getDays().add(getDayName(dietPlanTrack.getDate()));
-              metricsDTO.getWeights().add(dietPlanTrack.getWeight());
+            track -> {
+              days.add(getDayName(track.getDate()));
+              weights.add(track.getWeight());
             });
-    return metricsDTO;
+    return buildMetrics(dietPlanTrack, dietPlan.getTitle(), days, weights);
   }
 
   private Date[] getOneWeekDateRange() {
@@ -201,6 +200,22 @@ public class DietPlanService {
 
   private String getDayName(LocalDate date) {
     return date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+  }
+
+  private MetricsDTO buildMetrics(
+      DietPlanTrack dietPlanTrack, String title, List<String> days, List<Double> weights) {
+    MetricsDTO metricsDTO = new MetricsDTO();
+    Calories deficit = dietPlanTrack.getDeficit();
+    metricsDTO.setTitle(title);
+    metricsDTO.setTaken(CaloriesCalculator.calcPercentage(deficit.getTaken(), deficit.getTotal()));
+    metricsDTO.setCurrentWeight(dietPlanTrack.getWeight());
+    metricsDTO.setDeficit(deficit.getTotal());
+    metricsDTO.setProtein(dietPlanTrack.getProtein().getTotal());
+    metricsDTO.setCarbs(dietPlanTrack.getCarbs().getTotal());
+    metricsDTO.setFat(dietPlanTrack.getFat().getTotal());
+    metricsDTO.setDays(days);
+    metricsDTO.setWeights(weights);
+    return metricsDTO;
   }
 
   public boolean isThereAnyActivePlans() {
