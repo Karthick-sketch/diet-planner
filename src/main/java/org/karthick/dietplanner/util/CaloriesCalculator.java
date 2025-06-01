@@ -39,10 +39,17 @@ public final class CaloriesCalculator {
     }
   }
 
-  public static double calcDeficit(Macros macros) {
+  public static double calcTakenDeficit(Macros macros) {
     return macros.getProtein().getTaken() * 4
         + macros.getFat().getTaken() * 9
         + macros.getCarbs().getTaken() * 4;
+  }
+
+  public static long calcTotalDeficit(Macros macros) {
+    return Math.round(
+        macros.getProtein().getTotal() * 4
+            + macros.getFat().getTotal() * 9
+            + macros.getCarbs().getTotal() * 4);
   }
 
   public static long calcProtein(double deficit) {

@@ -125,7 +125,7 @@ public class DietPlanService {
   }
 
   private double calcDeficitTaken(DietPlanTrack dietPlanTrack) {
-    return CaloriesCalculator.calcDeficit(
+    return CaloriesCalculator.calcTakenDeficit(
         new Macros(dietPlanTrack.getProtein(), dietPlanTrack.getFat(), dietPlanTrack.getCarbs()));
   }
 
@@ -220,5 +220,16 @@ public class DietPlanService {
 
   public boolean isThereAnyActivePlans() {
     return dietPlannerRepository.findByActiveTrue().isPresent();
+  }
+
+  public long getCaloriesByMealCategory(String category) {
+    try {
+      DietPlan dietPlan = findDietPlanByUserId();
+      DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlan.getId());
+      Macros macros = getMacrosByCategory(dietPlanTrack.getMealKcal(), category);
+      return CaloriesCalculator.calcTotalDeficit(macros);
+    } catch (EntityNotFoundException e) {
+      return 500L;
+    }
   }
 }
