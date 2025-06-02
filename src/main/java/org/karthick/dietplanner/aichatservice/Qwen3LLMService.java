@@ -26,14 +26,14 @@ public class Qwen3LLMService {
 
   private ChatModel buildFoodSuggestChatModel(String prompt) {
     ChatModel chatModel = new ChatModel();
-    chatModel.setModel("qwen3-8b");
+    chatModel.setModel("qwen/qwen3-4b");
     chatModel.setMessages(
         List.of(
             new MessageModel(
                 "system",
-                "Respond in JSON format with keys: [name, calories (number), macronutrients (protein, carbs, fat), description (string)] (array). No other output. /no_think"),
+                "Respond in JSON with this format: '{ name: string, calories: number, macronutrients: { protein: number, carbs: number, fat: number }, description: string }[]'. No other output. /no_think"),
             new MessageModel("user", prompt)));
-    chatModel.setTemperature(0.4);
+    chatModel.setTemperature(0.3);
     chatModel.setMax_tokens(-1);
     chatModel.setStream(false);
     return chatModel;

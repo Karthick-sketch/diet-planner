@@ -23,7 +23,7 @@ public class AIFoodSuggestService {
 
   private String buildPrompt(FilterDTO filter, long calories) {
     return String.format(
-        "Suggest me a few healthy %s cuisine %s foods for %s under %d calories.",
+        "Suggest me 5 healthy %s cuisine %s foods for %s under %d calories.",
         filter.getCuisineFilter(), filter.getFoodFilter(), filter.getMealFilter(), calories);
   }
 
@@ -45,7 +45,14 @@ public class AIFoodSuggestService {
   private String removeObstacles(String content) {
     String jsonString = content.replace("\n", "");
     jsonString = jsonString.replace("<think>", "");
-    return jsonString.replace("</think>", "");
+    jsonString = jsonString.replace("</think>", "");
+    if (jsonString.charAt(0) != '[') {
+      jsonString = "[" + jsonString;
+    }
+    if (jsonString.charAt(jsonString.length() - 1) != ']') {
+      jsonString = jsonString + "]";
+    }
+    return jsonString;
   }
 
   public void addSuggestions(List<AIFoodSuggest> AIFoodSuggests) {
