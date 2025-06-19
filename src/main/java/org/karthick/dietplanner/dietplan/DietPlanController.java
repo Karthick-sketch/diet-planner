@@ -1,6 +1,7 @@
 package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
+import org.karthick.dietplanner.dietplan.dto.DietPlanOverviewDTO;
 import org.karthick.dietplanner.dietplan.dto.MetricsDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
@@ -71,5 +72,10 @@ public class DietPlanController {
   @GetMapping("/active-plans")
   public boolean isThereAnyActivePlans() {
     return dietPlanService.isThereAnyActivePlans();
+  }
+
+  @GetMapping("/overview/{dietPlanId}")
+  public List<DietPlanOverviewDTO> getDietPlansOverview(@PathVariable String dietPlanId) {
+    return dietPlanService.getDietPlansOverview(dietPlanId);
   }
 }

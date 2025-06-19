@@ -1,6 +1,7 @@
 package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
+import org.karthick.dietplanner.dietplan.dto.DietPlanOverviewDTO;
 import org.karthick.dietplanner.dietplan.dto.MetricsDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
@@ -231,5 +232,9 @@ public class DietPlanService {
     } catch (EntityNotFoundException e) {
       return 500L;
     }
+  }
+
+  public List<DietPlanOverviewDTO> getDietPlansOverview(String dietPlanId) {
+    return dietPlanTrackRepository.findAllDietPlanOverview(dietPlanId);
   }
 }
