@@ -11,6 +11,7 @@ import java.time.LocalDate;
 public class DietPlanOverviewDTO {
   private String id;
   private double weight;
+  private double tdee;
   private Calories deficit;
   private Calories protein;
   private Calories carbs;
