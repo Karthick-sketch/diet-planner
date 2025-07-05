@@ -45,8 +45,13 @@ public class DietPlanController {
     return dietPlanService.addWeight(dietPlanId, weight);
   }
 
-  @GetMapping("/track/{dietPlanId}")
-  public DietPlanTrack getDietPlanTrack(@PathVariable String dietPlanId) {
+  @GetMapping("/track/{dietPlanTrackId}")
+  public DietPlanTrack getDietPlanTrackById(@PathVariable String dietPlanTrackId) {
+    return dietPlanService.findDietPlanTrackById(dietPlanTrackId);
+  }
+
+  @GetMapping("/track/plan/{dietPlanId}")
+  public DietPlanTrack getDietPlanTrackByDietPlanId(@PathVariable String dietPlanId) {
     return dietPlanService.findDietPlanTrackByDietPlanId(dietPlanId);
   }
 

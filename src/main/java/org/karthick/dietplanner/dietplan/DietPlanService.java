@@ -89,6 +89,14 @@ public class DietPlanService {
             new DietPlanTrack(dietPlan.getTodayWeight(), LocalDate.now(), dietPlan.getId())));
   }
 
+  public DietPlanTrack findDietPlanTrackById(String dietPlanTrackId) {
+    Optional<DietPlanTrack> dietPlanTrack = dietPlanTrackRepository.findById(dietPlanTrackId);
+    if (dietPlanTrack.isEmpty()) {
+      throw new EntityNotFoundException("Diet plan track not found");
+    }
+    return dietPlanTrack.get();
+  }
+
   public DietPlanTrack findDietPlanTrackByDietPlanId(String dietPlanId) {
     DietPlan dietPlan = findDietPlanById(dietPlanId);
     return dietPlanTrackRepository
