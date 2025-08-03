@@ -19,7 +19,7 @@ public class DietPlanTrack {
   @Id private String id;
   private double weight;
   private double tdee;
-  private Calories deficit;
+  private Calories intake;
   private Calories protein;
   private Calories carbs;
   private Calories fat;

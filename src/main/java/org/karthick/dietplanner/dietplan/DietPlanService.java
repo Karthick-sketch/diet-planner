@@ -5,6 +5,8 @@ import org.karthick.dietplanner.dietplan.dto.DietPlanOverviewDTO;
 import org.karthick.dietplanner.dietplan.dto.MetricsDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
 import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
+import org.karthick.dietplanner.dietplan.enums.Goal;
+import org.karthick.dietplanner.dietplan.enums.Plan;
 import org.karthick.dietplanner.dietplan.repository.DietPlanRepository;
 import org.karthick.dietplanner.dietplan.repository.DietPlanTrackRepository;
 import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
@@ -71,15 +73,21 @@ public class DietPlanService {
             dietPlan.getAge(),
             dietPlanTrack.getWeight(),
             dietPlan.getHeight(),
+            dietPlan.getGender(),
             dietPlan.getActivity()));
-    double deficit =
-        CaloriesCalculator.calcDeficit(dietPlanTrack.getTdee(), dietPlan.getGoal().getValue());
-    dietPlanTrack.setDeficit(new Calories(deficit));
-    dietPlanTrack.setProtein(new Calories(CaloriesCalculator.calcProtein(deficit)));
-    dietPlanTrack.setFat(new Calories(CaloriesCalculator.calcFat(deficit)));
-    dietPlanTrack.setCarbs(new Calories(CaloriesCalculator.calcCarbs(deficit)));
+    double intake = getIntake(dietPlanTrack.getTdee(), dietPlan.getGoal(), dietPlan.getPlan());
+    dietPlanTrack.setIntake(new Calories(intake));
+    dietPlanTrack.setProtein(new Calories(CaloriesCalculator.calcProtein(intake)));
+    dietPlanTrack.setFat(new Calories(CaloriesCalculator.calcFat(intake)));
+    dietPlanTrack.setCarbs(new Calories(CaloriesCalculator.calcCarbs(intake)));
     dietPlanTrack.setMealKcal(splitForMealKcal(dietPlanTrack));
     return dietPlanTrack;
+  }
+
+  private double getIntake(double tdee, Goal goal, Plan plan) {
+    return plan == Plan.WEIGHT_LOSS
+        ? CaloriesCalculator.calcDeficit(tdee, goal.getValue())
+        : CaloriesCalculator.calcSurplus(tdee, goal.getValue());
   }
 
   public DietPlanTrack createDietPlanTrack(DietPlan dietPlan) {
@@ -119,7 +127,7 @@ public class DietPlanService {
     dietPlanMacros.getProtein().setTaken(macros.getProtein().getTaken());
     dietPlanMacros.getFat().setTaken(macros.getFat().getTaken());
     dietPlanMacros.getCarbs().setTaken(macros.getCarbs().getTaken());
-    dietPlanTrack.getDeficit().setTaken(calcDeficitTaken(dietPlanTrack));
+    dietPlanTrack.getIntake().setTaken(calcDeficitTaken(dietPlanTrack));
     adjustMacros(dietPlanTrack);
     return dietPlanTrackRepository.save(dietPlanTrack);
   }
@@ -214,11 +222,11 @@ public class DietPlanService {
   private MetricsDTO buildMetrics(
       DietPlanTrack dietPlanTrack, String title, List<String> days, List<Double> weights) {
     MetricsDTO metricsDTO = new MetricsDTO();
-    Calories deficit = dietPlanTrack.getDeficit();
+    Calories intake = dietPlanTrack.getIntake();
     metricsDTO.setTitle(title);
-    metricsDTO.setTaken(CaloriesCalculator.calcPercentage(deficit.getTaken(), deficit.getTotal()));
+    metricsDTO.setTaken(CaloriesCalculator.calcPercentage(intake.getTaken(), intake.getTotal()));
     metricsDTO.setCurrentWeight(dietPlanTrack.getWeight());
-    metricsDTO.setDeficit(deficit.getTotal());
+    metricsDTO.setIntake(intake.getTotal());
     metricsDTO.setProtein(dietPlanTrack.getProtein().getTotal());
     metricsDTO.setCarbs(dietPlanTrack.getCarbs().getTotal());
     metricsDTO.setFat(dietPlanTrack.getFat().getTotal());

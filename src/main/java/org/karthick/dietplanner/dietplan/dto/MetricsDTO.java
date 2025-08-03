@@ -11,7 +11,7 @@ public class MetricsDTO {
   private String title;
   private double taken;
   private double currentWeight;
-  private double deficit;
+  private double intake;
   private double protein;
   private double carbs;
   private double fat;

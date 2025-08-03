@@ -1,11 +1,19 @@
 package org.karthick.dietplanner.util;
 
 import org.karthick.dietplanner.dietplan.enums.Activity;
+import org.karthick.dietplanner.dietplan.enums.Gender;
 import org.karthick.dietplanner.shared.model.Macros;
 
 public final class CaloriesCalculator {
-  public static double findTDEE(int age, double weight, double height, Activity activity) {
-    return 10 * weight + 6.25 * height - 5 * age + activity.getValue();
+  /** BMR - Basal Metabolic Rate */
+  public static double findBMR(int age, double weight, double height, Gender gender) {
+    return 10 * weight + 6.25 * height - 5 * age + (gender == Gender.MALE ? 5 : -161);
+  }
+
+  /** TDEE - Total Daily Energy Expenditure */
+  public static double findTDEE(
+      int age, double weight, double height, Gender gender, Activity activity) {
+    return findBMR(age, weight, height, gender) * activity.getValue();
   }
 
   public static long kcalPercentage(double kcal, int percent) {
@@ -27,16 +35,18 @@ public final class CaloriesCalculator {
     return Math.round((value / maxValue) * 100);
   }
 
+  public static long roundKcal(long kcal) {
+    long round = kcal / 100 * 100;
+    long difference = kcal - round;
+    return round + (difference > 50 ? 100 : (difference > 0 ? 50 : 0));
+  }
+
+  public static long calcSurplus(double kcal, int percent) {
+    return roundKcal(Math.round(kcal) + percentageOf(kcal, percent - 10));
+  }
+
   public static long calcDeficit(double kcal, int percent) {
-    long deficit = CaloriesCalculator.kcalPercentage(kcal, percent);
-    long round = deficit / 100 * 100;
-    if (deficit - round == 0) {
-      return deficit;
-    } else if (deficit - round < 50) {
-      return round + 50;
-    } else {
-      return round + 100;
-    }
+    return roundKcal(kcalPercentage(kcal, percent));
   }
 
   public static double calcTakenDeficit(Macros macros) {
