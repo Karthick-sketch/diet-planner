@@ -3,9 +3,10 @@ package org.karthick.dietplanner.dietplan.entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.karthick.dietplanner.dietplan.enums.*;
-import org.karthick.dietplanner.shared.model.TimePeriod;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -21,8 +22,13 @@ public class DietPlan {
   private double todayWeight;
   private Goal goal;
   private double finalGoal;
-  private TimePeriod timePeriod;
+  private int duration;
   private Activity activity;
   private String userId;
   private boolean active;
+  private LocalDate createdAt;
+
+  public DietPlan() {
+    this.createdAt = LocalDate.now();
+  }
 }

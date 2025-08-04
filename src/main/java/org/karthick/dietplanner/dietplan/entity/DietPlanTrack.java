@@ -24,12 +24,14 @@ public class DietPlanTrack {
   private Calories carbs;
   private Calories fat;
   private MealKcal mealKcal;
-  private LocalDate date;
+  private int dayCount;
+  private LocalDate createdAt;
   private String dietPlanId;
 
-  public DietPlanTrack(double weight, LocalDate date, String dietPlanId) {
+  public DietPlanTrack(double weight, LocalDate createdAt, int dayCount, String dietPlanId) {
     this.weight = weight;
-    this.date = date;
+    this.createdAt = createdAt;
+    this.dayCount = dayCount;
     this.dietPlanId = dietPlanId;
   }
 }

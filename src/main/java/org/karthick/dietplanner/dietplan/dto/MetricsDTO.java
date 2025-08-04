@@ -10,6 +10,8 @@ import java.util.List;
 public class MetricsDTO {
   private String title;
   private double taken;
+  private int duration;
+  private int currentDay;
   private double currentWeight;
   private double intake;
   private double protein;

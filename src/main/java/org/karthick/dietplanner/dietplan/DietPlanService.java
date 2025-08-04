@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @AllArgsConstructor
@@ -91,10 +92,12 @@ public class DietPlanService {
   }
 
   public DietPlanTrack createDietPlanTrack(DietPlan dietPlan) {
+    LocalDate today = LocalDate.now();
+    int dayCount = (int) ChronoUnit.DAYS.between(dietPlan.getCreatedAt(), today) + 1;
     return dietPlanTrackRepository.save(
         processDietPlan(
             dietPlan,
-            new DietPlanTrack(dietPlan.getTodayWeight(), LocalDate.now(), dietPlan.getId())));
+            new DietPlanTrack(dietPlan.getTodayWeight(), today, dayCount, dietPlan.getId())));
   }
 
   public DietPlanTrack findDietPlanTrackById(String dietPlanTrackId) {
@@ -108,7 +111,7 @@ public class DietPlanService {
   public DietPlanTrack findDietPlanTrackByDietPlanId(String dietPlanId) {
     DietPlan dietPlan = findDietPlanById(dietPlanId);
     return dietPlanTrackRepository
-        .findByDateAndDietPlanId(LocalDate.now(), dietPlanId)
+        .findByCreatedAtAndDietPlanId(LocalDate.now(), dietPlanId)
         .orElseGet(() -> createDietPlanTrack(dietPlan));
   }
 
@@ -173,7 +176,7 @@ public class DietPlanService {
 
   public MealKcal getMealKcal(String dietPlanId) {
     Optional<DietPlanTrack> dietPlanTrack =
-        dietPlanTrackRepository.findByDateAndDietPlanId(LocalDate.now(), dietPlanId);
+        dietPlanTrackRepository.findByCreatedAtAndDietPlanId(LocalDate.now(), dietPlanId);
     if (dietPlanTrack.isEmpty()) {
       throw new EntityNotFoundException("No macros found.");
     }
@@ -200,10 +203,10 @@ public class DietPlanService {
         .findByDateRangeAndDietPlanId(dateRange[0], dateRange[1], dietPlan.getId())
         .forEach(
             track -> {
-              days.add(getDayName(track.getDate()));
+              days.add(getDayName(track.getCreatedAt()));
               weights.add(track.getWeight());
             });
-    return buildMetrics(dietPlanTrack, dietPlan.getTitle(), days, weights);
+    return buildMetrics(dietPlanTrack, dietPlan.getTitle(), dietPlan.getDuration(), days, weights);
   }
 
   private Date[] getOneWeekDateRange() {
@@ -220,11 +223,17 @@ public class DietPlanService {
   }
 
   private MetricsDTO buildMetrics(
-      DietPlanTrack dietPlanTrack, String title, List<String> days, List<Double> weights) {
+      DietPlanTrack dietPlanTrack,
+      String title,
+      int duration,
+      List<String> days,
+      List<Double> weights) {
     MetricsDTO metricsDTO = new MetricsDTO();
     Calories intake = dietPlanTrack.getIntake();
     metricsDTO.setTitle(title);
     metricsDTO.setTaken(CaloriesCalculator.calcPercentage(intake.getTaken(), intake.getTotal()));
+    metricsDTO.setDuration(duration);
+    metricsDTO.setCurrentDay(dietPlanTrack.getDayCount());
     metricsDTO.setCurrentWeight(dietPlanTrack.getWeight());
     metricsDTO.setIntake(intake.getTotal());
     metricsDTO.setProtein(dietPlanTrack.getProtein().getTotal());
