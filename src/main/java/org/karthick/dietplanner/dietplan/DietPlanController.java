@@ -2,9 +2,9 @@ package org.karthick.dietplanner.dietplan;
 
 import lombok.AllArgsConstructor;
 import org.karthick.dietplanner.dietplan.dto.DietPlanOverviewDTO;
+import org.karthick.dietplanner.dietplan.dto.DietPlansHistoryDTO;
 import org.karthick.dietplanner.dietplan.dto.MetricsDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlan;
-import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
 import org.karthick.dietplanner.dietplan.entity.DietPlanTrack;
 import org.karthick.dietplanner.exception.BadRequestException;
 import org.karthick.dietplanner.shared.model.Macros;
@@ -25,9 +25,9 @@ public class DietPlanController {
     return dietPlanService.findAllDietPlans();
   }
 
-  @GetMapping("/list")
-  public List<DietPlanListItemDTO> getAllDietPlanList() {
-    return dietPlanService.findAllDietPlanList();
+  @GetMapping("/history")
+  public List<DietPlansHistoryDTO> getDietPlansHistory() {
+    return dietPlanService.findDietPlansHistory();
   }
 
   @GetMapping
@@ -82,5 +82,10 @@ public class DietPlanController {
   @GetMapping("/overview/{dietPlanId}")
   public List<DietPlanOverviewDTO> getDietPlansOverview(@PathVariable String dietPlanId) {
     return dietPlanService.getDietPlansOverview(dietPlanId);
+  }
+
+  @GetMapping("/status")
+  public boolean isDietPlanReachedDuration() {
+    return dietPlanService.isDietPlanReachedDuration();
   }
 }

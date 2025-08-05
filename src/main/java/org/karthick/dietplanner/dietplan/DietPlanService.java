@@ -9,7 +9,7 @@ import org.karthick.dietplanner.dietplan.enums.Goal;
 import org.karthick.dietplanner.dietplan.enums.Plan;
 import org.karthick.dietplanner.dietplan.repository.DietPlanRepository;
 import org.karthick.dietplanner.dietplan.repository.DietPlanTrackRepository;
-import org.karthick.dietplanner.dietplan.dto.DietPlanListItemDTO;
+import org.karthick.dietplanner.dietplan.dto.DietPlansHistoryDTO;
 import org.karthick.dietplanner.exception.EntityNotFoundException;
 import org.karthick.dietplanner.security.UserSession;
 import org.karthick.dietplanner.shared.model.Calories;
@@ -37,8 +37,8 @@ public class DietPlanService {
     return dietPlannerRepository.findByUserId(userSession.getAuthenticatedUserId());
   }
 
-  public List<DietPlanListItemDTO> findAllDietPlanList() {
-    return dietPlannerRepository.findAllDietPlanListByUserId(userSession.getAuthenticatedUserId());
+  public List<DietPlansHistoryDTO> findDietPlansHistory() {
+    return dietPlannerRepository.findDietPlansHistoryByUserId(userSession.getAuthenticatedUserId());
   }
 
   public DietPlan findDietPlanById(String id) {
@@ -93,11 +93,15 @@ public class DietPlanService {
 
   public DietPlanTrack createDietPlanTrack(DietPlan dietPlan) {
     LocalDate today = LocalDate.now();
-    int dayCount = (int) ChronoUnit.DAYS.between(dietPlan.getCreatedAt(), today) + 1;
+    int dayCount = countDays(dietPlan.getCreatedAt(), today);
     return dietPlanTrackRepository.save(
         processDietPlan(
             dietPlan,
             new DietPlanTrack(dietPlan.getTodayWeight(), today, dayCount, dietPlan.getId())));
+  }
+
+  private int countDays(LocalDate startDate, LocalDate endDate) {
+    return (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
   }
 
   public DietPlanTrack findDietPlanTrackById(String dietPlanTrackId) {
@@ -261,5 +265,20 @@ public class DietPlanService {
 
   public List<DietPlanOverviewDTO> getDietPlansOverview(String dietPlanId) {
     return dietPlanTrackRepository.findAllDietPlanOverview(dietPlanId);
+  }
+
+  public boolean isDietPlanReachedDuration() {
+    try {
+      DietPlan dietPlan = findDietPlanByUserId();
+      int dayCount = countDays(dietPlan.getCreatedAt(), LocalDate.now());
+      if (dayCount > dietPlan.getDuration()) {
+        dietPlan.setActive(false);
+        dietPlannerRepository.save(dietPlan);
+        return true;
+      }
+      return false;
+    } catch (EntityNotFoundException ignored) {
+      return true;
+    }
   }
 }

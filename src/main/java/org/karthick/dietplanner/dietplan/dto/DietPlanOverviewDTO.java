@@ -16,5 +16,5 @@ public class DietPlanOverviewDTO {
   private Calories protein;
   private Calories carbs;
   private Calories fat;
-  private LocalDate date;
+  private LocalDate createdAt;
 }

@@ -7,10 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DietPlanListItemDTO {
+public class DietPlansHistoryDTO {
   private String id;
   private String title;
   private Plan plan;
   private double finalGoal;
   private int duration;
+  private boolean active;
 }
