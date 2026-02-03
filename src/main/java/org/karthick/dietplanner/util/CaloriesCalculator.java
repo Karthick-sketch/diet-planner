@@ -2,18 +2,47 @@ package org.karthick.dietplanner.util;
 
 import org.karthick.dietplanner.dietplan.enums.Activity;
 import org.karthick.dietplanner.dietplan.enums.Gender;
+import org.karthick.dietplanner.dietplan.enums.Plan;
 import org.karthick.dietplanner.shared.model.Macros;
 
 public final class CaloriesCalculator {
+
   /** BMR - Basal Metabolic Rate */
-  public static double findBMR(int age, double weight, double height, Gender gender) {
-    return 10 * weight + 6.25 * height - 5 * age + (gender == Gender.MALE ? 5 : -161);
+  public static double findBMR(
+    int age,
+    double weight,
+    double height,
+    Gender gender
+  ) {
+    return (
+      10 * weight + 6.25 * height - 5 * age + (gender == Gender.MALE ? 5 : -161)
+    );
+  }
+
+  /** BMR - Body Mass Index */
+  public static double findBMI(double height, double weight) {
+    return (weight / (height * height)) * 10_000;
   }
 
   /** TDEE - Total Daily Energy Expenditure */
   public static double findTDEE(
-      int age, double weight, double height, Gender gender, Activity activity) {
+    int age,
+    double weight,
+    double height,
+    Gender gender,
+    Activity activity
+  ) {
     return findBMR(age, weight, height, gender) * activity.getValue();
+  }
+
+  public static int findMinimumDuration(double mass, Plan plan) {
+    return (int) Math.ceil(
+      Plan.WEIGHT_LOSS.equals(plan) ? mass * 7 : (mass / 0.5) * 7
+    );
+  }
+
+  public static int findMaximumDuration(double mass) {
+    return (int) Math.ceil((mass / 0.25) * 7);
   }
 
   public static long kcalPercentage(double kcal, int percent) {
@@ -26,9 +55,10 @@ public final class CaloriesCalculator {
 
   public static Macros macrosPercentage(Macros macros, int percent) {
     return new Macros(
-        percentageOf(macros.getProtein().getTotal(), percent),
-        percentageOf(macros.getFat().getTotal(), percent),
-        percentageOf(macros.getCarbs().getTotal(), percent));
+      percentageOf(macros.getProtein().getTotal(), percent),
+      percentageOf(macros.getFat().getTotal(), percent),
+      percentageOf(macros.getCarbs().getTotal(), percent)
+    );
   }
 
   public static long calcPercentage(double value, double maxValue) {
@@ -36,7 +66,7 @@ public final class CaloriesCalculator {
   }
 
   public static long roundKcal(long kcal) {
-    long round = kcal / 100 * 100;
+    long round = (kcal / 100) * 100;
     long difference = kcal - round;
     return round + (difference > 50 ? 100 : (difference > 0 ? 50 : 0));
   }
@@ -50,16 +80,19 @@ public final class CaloriesCalculator {
   }
 
   public static double calcTakenDeficit(Macros macros) {
-    return macros.getProtein().getTaken() * 4
-        + macros.getFat().getTaken() * 9
-        + macros.getCarbs().getTaken() * 4;
+    return (
+      macros.getProtein().getTaken() * 4 +
+      macros.getFat().getTaken() * 9 +
+      macros.getCarbs().getTaken() * 4
+    );
   }
 
   public static long calcTotalDeficit(Macros macros) {
     return Math.round(
-        macros.getProtein().getTotal() * 4
-            + macros.getFat().getTotal() * 9
-            + macros.getCarbs().getTotal() * 4);
+      macros.getProtein().getTotal() * 4 +
+        macros.getFat().getTotal() * 9 +
+        macros.getCarbs().getTotal() * 4
+    );
   }
 
   public static long calcProtein(double deficit) {

@@ -1,18 +1,20 @@
 package org.karthick.dietplanner.dietplan.entity;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import org.karthick.dietplanner.dietplan.enums.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
 @Document(collection = "diet_plans")
 public class DietPlan {
-  @Id private String id;
+
+  @Id
+  private String id;
+
   private String title;
   private Plan plan;
   private int age;
@@ -21,7 +23,7 @@ public class DietPlan {
   private double weight;
   private double todayWeight;
   private Goal goal;
-  private double finalGoal;
+  private double targetWeight;
   private int duration;
   private Activity activity;
   private String userId;
