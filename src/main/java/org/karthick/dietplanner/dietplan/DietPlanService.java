@@ -24,6 +24,7 @@ import org.karthick.dietplanner.shared.model.Macros;
 import org.karthick.dietplanner.shared.model.MealKcal;
 import org.karthick.dietplanner.util.CaloriesCalculator;
 import org.karthick.dietplanner.util.constants.MacrosConstants;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -103,10 +104,7 @@ public class DietPlanService {
     }
   }
 
-  private DietPlanTrack processDietPlan(
-    DietPlan dietPlan,
-    DietPlanTrack dietPlanTrack
-  ) {
+  private void processDietPlan(DietPlan dietPlan, DietPlanTrack dietPlanTrack) {
     dietPlanTrack.setTdee(
       CaloriesCalculator.findTDEE(
         dietPlan.getAge(),
@@ -128,7 +126,6 @@ public class DietPlanService {
     dietPlanTrack.setFat(new Calories(CaloriesCalculator.calcFat(intake)));
     dietPlanTrack.setCarbs(new Calories(CaloriesCalculator.calcCarbs(intake)));
     dietPlanTrack.setMealKcal(splitForMealKcal(dietPlanTrack));
-    return dietPlanTrack;
   }
 
   private double getIntake(double tdee, Goal goal, Plan plan) {
@@ -140,24 +137,21 @@ public class DietPlanService {
   public DietPlanTrack createDietPlanTrack(DietPlan dietPlan) {
     LocalDate today = LocalDate.now();
     int dayCount = countDays(dietPlan.getCreatedAt(), today);
-    return dietPlanTrackRepository.save(
-      processDietPlan(
-        dietPlan,
-        new DietPlanTrack(
-          dietPlan.getTodayWeight(),
-          today,
-          dayCount,
-          dietPlan.getId()
-        )
-      )
+    DietPlanTrack dietPlanTrack = new DietPlanTrack(
+      dietPlan.getTodayWeight(),
+      today,
+      dayCount,
+      dietPlan.getId()
     );
+    processDietPlan(dietPlan, dietPlanTrack);
+    return dietPlanTrackRepository.save(dietPlanTrack);
   }
 
   private int countDays(LocalDate startDate, LocalDate endDate) {
     return (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
   }
 
-  public DietPlanTrack findDietPlanTrackById(String dietPlanTrackId) {
+  public DietPlanTrack findDietPlanTrackById(@NonNull String dietPlanTrackId) {
     Optional<DietPlanTrack> dietPlanTrack = dietPlanTrackRepository.findById(
       dietPlanTrackId
     );
@@ -180,9 +174,8 @@ public class DietPlanService {
     dietPlannerRepository.save(dietPlan);
     DietPlanTrack dietPlanTrack = findDietPlanTrackByDietPlanId(dietPlanId);
     dietPlanTrack.setWeight(weight);
-    return dietPlanTrackRepository.save(
-      processDietPlan(dietPlan, dietPlanTrack)
-    );
+    processDietPlan(dietPlan, dietPlanTrack);
+    return dietPlanTrackRepository.save(dietPlanTrack);
   }
 
   public DietPlanTrack updateMacros(
