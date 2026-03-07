@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
   private final UserService userService;
 
   @GetMapping("/{username}")
@@ -18,6 +19,6 @@ public class UserController {
 
   @PostMapping("/register")
   public UserDTO register(@RequestBody User user) {
-    return userService.createUser(user);
+    return userService.registerUser(user);
   }
 }
