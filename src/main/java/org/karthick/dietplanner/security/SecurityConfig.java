@@ -25,12 +25,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private final CustomAuthenticationManager customAuthenticationManager;
+  private final JWTTokenService jwtTokenService;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http)
     throws Exception {
     AuthenticationFilter authenticationFilter = new AuthenticationFilter(
-      customAuthenticationManager
+      customAuthenticationManager,
+      jwtTokenService
     );
     authenticationFilter.setFilterProcessesUrl("/authenticate");
     http
@@ -38,14 +40,21 @@ public class SecurityConfig {
       .cors(Customizer.withDefaults())
       .authorizeHttpRequests(authorizeRequests ->
         authorizeRequests
-          .requestMatchers(HttpMethod.POST, SecurityConstants.REGISTER_PATH)
+          .requestMatchers(
+            HttpMethod.POST,
+            SecurityConstants.REGISTER_PATH,
+            SecurityConstants.REFRESH_PATH
+          )
           .permitAll()
           .anyRequest()
           .authenticated()
       )
       .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
       .addFilter(authenticationFilter)
-      .addFilterAfter(new JWTAuthenticationFilter(), AuthenticationFilter.class)
+      .addFilterAfter(
+        new JWTAuthenticationFilter(jwtTokenService),
+        AuthenticationFilter.class
+      )
       .sessionManagement(session ->
         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
       );
@@ -60,7 +69,12 @@ public class SecurityConfig {
       List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
     );
     corsConfiguration.setAllowedHeaders(List.of("*"));
-    corsConfiguration.setExposedHeaders(List.of("Authorization"));
+    corsConfiguration.setExposedHeaders(
+      List.of(
+        SecurityConstants.AUTHORIZATION,
+        SecurityConstants.REFRESH_TOKEN_HEADER
+      )
+    );
     corsConfiguration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source =

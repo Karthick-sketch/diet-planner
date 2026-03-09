@@ -1,6 +1,7 @@
 package org.karthick.dietplanner.security.filter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,12 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
   ) throws ServletException, IOException {
     try {
       filterChain.doFilter(request, response);
+    } catch (TokenExpiredException e) {
+      setExceptionResponse(
+        response,
+        HttpServletResponse.SC_UNAUTHORIZED,
+        "Access token expired"
+      );
     } catch (JWTVerificationException e) {
       setExceptionResponse(
         response,
