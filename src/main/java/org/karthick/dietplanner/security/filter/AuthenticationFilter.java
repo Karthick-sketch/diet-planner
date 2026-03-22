@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import org.karthick.dietplanner.security.JWTTokenService;
 import org.karthick.dietplanner.security.SecurityConstants;
 import org.karthick.dietplanner.user.entity.User;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private AuthenticationManager authenticationManager;
+  private final AuthenticationManager authenticationManager;
   private final JWTTokenService jwtTokenService;
 
   @Override
@@ -52,23 +54,25 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     FilterChain chain,
     Authentication auth
   ) {
-    String accessToken = jwtTokenService.generateToken(
-      auth.getName(),
-      SecurityConstants.ACCESS_TOKEN_EXPIRATION
-    );
     String refreshToken = jwtTokenService.generateToken(
       auth.getName(),
       SecurityConstants.REFRESH_TOKEN_EXPIRATION
     );
-
-    response.setHeader(
-      SecurityConstants.AUTHORIZATION,
-      SecurityConstants.BEARER + accessToken
-    );
-    response.setHeader(
+    ResponseCookie cookie = ResponseCookie.from(
       SecurityConstants.REFRESH_TOKEN_HEADER,
-      SecurityConstants.BEARER + refreshToken
-    );
+      refreshToken
+    )
+      .httpOnly(true)
+      .path("/")
+      .maxAge(SecurityConstants.REFRESH_TOKEN_EXPIRATION)
+      // Development
+      .secure(false)
+      .sameSite("None")
+      // Production
+      // .secure(true)
+      // .sameSite("Strict")
+      .build();
+    response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
   }
 
   @Override
