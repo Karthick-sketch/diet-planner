@@ -34,15 +34,14 @@ public class UserController {
     HttpServletRequest request,
     HttpServletResponse response
   ) throws IOException {
-    String refreshHeader = request.getHeader(
-      SecurityConstants.REFRESH_TOKEN_HEADER
+    String cookieHeader = request.getHeader("Cookie");
+    String refreshToken = cookieHeader.replace(
+      SecurityConstants.REFRESH_TOKEN_HEADER + "=",
+      ""
     );
-    if (
-      refreshHeader != null &&
-      refreshHeader.startsWith(SecurityConstants.BEARER)
-    ) {
+    if (refreshToken != null) {
       try {
-        String username = jwtTokenService.validateToken(refreshHeader);
+        String username = jwtTokenService.validateToken(refreshToken);
         String newAccessToken = jwtTokenService.generateToken(
           username,
           SecurityConstants.ACCESS_TOKEN_EXPIRATION

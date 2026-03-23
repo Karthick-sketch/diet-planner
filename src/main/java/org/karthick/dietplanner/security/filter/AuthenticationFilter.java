@@ -63,14 +63,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
       refreshToken
     )
       .httpOnly(true)
+      .sameSite("Lax")
+      .secure(false)
       .path("/")
       .maxAge(SecurityConstants.REFRESH_TOKEN_EXPIRATION)
-      // Development
-      .secure(false)
-      .sameSite("None")
-      // Production
-      // .secure(true)
-      // .sameSite("Strict")
       .build();
     response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
   }
