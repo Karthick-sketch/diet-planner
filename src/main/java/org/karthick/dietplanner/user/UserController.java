@@ -1,6 +1,7 @@
 package org.karthick.dietplanner.user;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -60,5 +61,13 @@ public class UserController {
       response.getWriter().write("Refresh token missing");
       response.getWriter().flush();
     }
+  }
+
+  @PostMapping("/logout")
+  public void logout(HttpServletResponse response) {
+    Cookie cookie = new Cookie(SecurityConstants.REFRESH_TOKEN_HEADER, "");
+    cookie.setPath("/");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
   }
 }
