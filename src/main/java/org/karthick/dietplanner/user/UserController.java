@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import org.karthick.dietplanner.exception.UnauthorizedException;
 import org.karthick.dietplanner.security.JWTTokenService;
 import org.karthick.dietplanner.security.SecurityConstants;
+import org.karthick.dietplanner.security.UserSession;
 import org.karthick.dietplanner.user.dto.AccessTokenDTO;
 import org.karthick.dietplanner.user.dto.UserDTO;
+import org.karthick.dietplanner.user.dto.UsernameDTO;
 import org.karthick.dietplanner.user.entity.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -19,11 +21,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
   private final UserService userService;
+  private final UserSession userSession;
   private final JWTTokenService jwtTokenService;
 
-  @GetMapping("/{username}")
-  public UserDTO getUser(@PathVariable String username) {
-    return userService.findUserDTOByUsername(username);
+  @GetMapping("/username")
+  public UsernameDTO getUser() {
+    return new UsernameDTO(userSession.getAuthenticatedUsername());
   }
 
   @PostMapping("/register")
