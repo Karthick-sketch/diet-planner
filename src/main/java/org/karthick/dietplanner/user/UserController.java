@@ -2,13 +2,13 @@ package org.karthick.dietplanner.user;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.AllArgsConstructor;
+import org.karthick.dietplanner.exception.UnauthorizedException;
 import org.karthick.dietplanner.security.JWTTokenService;
 import org.karthick.dietplanner.security.SecurityConstants;
 import org.karthick.dietplanner.user.dto.AccessTokenDTO;
 import org.karthick.dietplanner.user.dto.UserDTO;
 import org.karthick.dietplanner.user.entity.User;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,14 +32,14 @@ public class UserController {
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<?> requestAccessToken(
+  public AccessTokenDTO requestAccessToken(
     @CookieValue(
       name = SecurityConstants.REFRESH_TOKEN_HEADER,
       required = false
     ) String refreshToken
   ) {
     if (refreshToken == null) {
-      return ResponseEntity.badRequest().body("Refresh token missing");
+      throw new UnauthorizedException("Refresh token missing");
     }
     try {
       String username = jwtTokenService.validateToken(refreshToken);
@@ -47,11 +47,9 @@ public class UserController {
         username,
         SecurityConstants.ACCESS_TOKEN_EXPIRATION
       );
-      return ResponseEntity.ok().body(new AccessTokenDTO(newAccessToken));
+      return new AccessTokenDTO(newAccessToken);
     } catch (JWTVerificationException e) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-        "Invalid or expired refresh token"
-      );
+      throw new UnauthorizedException("Invalid or expired refresh token");
     }
   }
 
