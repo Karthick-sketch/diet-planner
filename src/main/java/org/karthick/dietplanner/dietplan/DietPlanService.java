@@ -372,4 +372,15 @@ public class DietPlanService {
       return true;
     }
   }
+
+  public DietPlansHistoryDTO findPastDietPlan() {
+    Optional<DietPlansHistoryDTO> dietPlan =
+      dietPlannerRepository.findFirstDietPlansHistoryByUserId(
+        userSession.getAuthenticatedUserId()
+      );
+    if (dietPlan.isEmpty()) {
+      throw new EntityNotFoundException("No past plan found.");
+    }
+    return dietPlan.get();
+  }
 }

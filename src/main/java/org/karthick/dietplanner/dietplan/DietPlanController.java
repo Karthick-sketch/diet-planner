@@ -101,4 +101,9 @@ public class DietPlanController {
   public boolean isDietPlanReachedDuration() {
     return dietPlanService.isDietPlanReachedDuration();
   }
+
+  @GetMapping("/past-plan")
+  public DietPlansHistoryDTO getPastPlan() {
+    return dietPlanService.findPastDietPlan();
+  }
 }
