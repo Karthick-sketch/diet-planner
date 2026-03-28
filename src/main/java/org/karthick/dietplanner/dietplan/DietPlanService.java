@@ -79,6 +79,10 @@ public class DietPlanService {
     return dietPlan;
   }
 
+  public DietPlan updateDietPlan(DietPlan dietPlan) {
+    return createDietPlan(dietPlan);
+  }
+
   private void validateDietPlan(DietPlan dietPlan) {
     // validate Target weight
     double bmi = CaloriesCalculator.findBMI(
@@ -164,7 +168,7 @@ public class DietPlanService {
   public DietPlanTrack findDietPlanTrackByDietPlanId(String dietPlanId) {
     DietPlan dietPlan = findDietPlanById(dietPlanId);
     return dietPlanTrackRepository
-      .findByCreatedAtAndDietPlanId(LocalDate.now(), dietPlanId)
+      .findFirstByCreatedAtAndDietPlanId(LocalDate.now(), dietPlanId)
       .orElseGet(() -> createDietPlanTrack(dietPlan));
   }
 
@@ -245,7 +249,7 @@ public class DietPlanService {
 
   public MealKcal getMealKcal(String dietPlanId) {
     Optional<DietPlanTrack> dietPlanTrack =
-      dietPlanTrackRepository.findByCreatedAtAndDietPlanId(
+      dietPlanTrackRepository.findFirstByCreatedAtAndDietPlanId(
         LocalDate.now(),
         dietPlanId
       );

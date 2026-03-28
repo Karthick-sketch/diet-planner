@@ -36,9 +36,19 @@ public class DietPlanController {
     return dietPlanService.findDietPlanByUserId();
   }
 
+  @GetMapping("/{dietPlanId}")
+  public DietPlan getDietPlanById(@PathVariable String dietPlanId) {
+    return dietPlanService.findDietPlanById(dietPlanId);
+  }
+
   @PostMapping
   public DietPlan createDietPlan(@RequestBody DietPlan dietPlan) {
     return dietPlanService.createDietPlan(dietPlan);
+  }
+
+  @PutMapping("/update")
+  public DietPlan updateDietPlan(@RequestBody DietPlan dietPlan) {
+    return dietPlanService.updateDietPlan(dietPlan);
   }
 
   @PostMapping("/add-weight/{dietPlanId}")
